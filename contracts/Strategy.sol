@@ -11,7 +11,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/SafeERC20Upgradeable.sol
 
 import {
     BaseStrategy
-} from "@GalloDaSballo/contracts/badger-sett/strategies/BaseStrategy.sol";
+} from "../deps/BaseStrategy.sol";
 
 contract StrategyHarvestMetaFarm is BaseStrategy {
     using SafeERC20Upgradeable for IERC20Upgradeable;

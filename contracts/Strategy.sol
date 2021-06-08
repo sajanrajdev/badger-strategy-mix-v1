@@ -16,25 +16,14 @@ import {
     BaseStrategy
 } from "../deps/BaseStrategy.sol";
 
-contract StrategyHarvestMetaFarm is BaseStrategy {
+contract SettStrategy is BaseStrategy {
     using SafeERC20Upgradeable for IERC20Upgradeable;
     using AddressUpgradeable for address;
     using SafeMathUpgradeable for uint256;
 
+    // address public want // Inherited from BaseStrategy, the token the strategy wants, swaps into and tries to grow
     address public lpComponent; // Token we provide liquidity with
     address public reward; // Token we farm and swap to want / lpComponent
-
-    /// @dev struct used for Harvest reporting, adapt to specific strat
-    struct HarvestData {
-        uint256 rewardHarvested;
-        uint256 keepReward;
-        uint256 rewardRecycled;
-        uint256 lpComponentDeposited;
-        uint256 wantProcessed;
-        uint256 wantDeposited;
-        uint256 governancePerformanceFee;
-        uint256 strategistPerformanceFee;
-    }
 
     function initialize(
         address _governance,
@@ -67,7 +56,6 @@ contract StrategyHarvestMetaFarm is BaseStrategy {
         return "StrategyName";
     }
 
-
     // @dev Specify the version of the Strategy, for upgrades
     function version() external pure returns (string memory) {
         return "1.0";
@@ -78,8 +66,12 @@ contract StrategyHarvestMetaFarm is BaseStrategy {
         return 0;
     }
 
+    function isTendable() public override view returns (bool) {
+        return true;
+    }
+
     // @dev These are the tokens that cannot be moved except by the vault
-    function getProtectedTokens() external override view returns (address[] memory) {
+    function getProtectedTokens() public override view returns (address[] memory) {
         address[] memory protectedTokens = new address[](3);
         protectedTokens[0] = want;
         protectedTokens[1] = lpComponent;
@@ -88,6 +80,7 @@ contract StrategyHarvestMetaFarm is BaseStrategy {
     }
 
     /// ===== Permissioned Actions: Governance =====
+    /// @notice Delete if you don't need!
     function setKeepReward(uint256 _setKeepReward) external {
         _onlyGovernance();
     }
@@ -96,41 +89,54 @@ contract StrategyHarvestMetaFarm is BaseStrategy {
 
     /// @dev security check to avoid moving tokens that would cause a rugpull, edit based on strat
     function _onlyNotProtectedTokens(address _asset) internal override {
-        require(address(want) != _asset, "want");
-        require(lpComponent != _asset, "lpComponent");
-        require(reward != _asset, "reward");
+        address[] memory protectedTokens = getProtectedTokens();
+
+        for(uint256 x = 0; x < protectedTokens.length; x++){
+            require(address(protectedTokens[x]) != _asset, "Asset is protected");
+        }
     }
 
 
-    /// @dev deposit the amount of want
+    /// @dev invest the amount of want
+    /// @notice When this function is called, the controller has already sent want to this
+    /// @notice Just get the current balance and then invest accordingly
     function _deposit(uint256 _want) internal override {
     }
 
     /// @dev utility function to withdraw all that a account has deposited
     function _withdrawAll() internal override {
     }
-    /// @dev withdraw the specified amount of want
+    /// @dev withdraw the specified amount of want, liquidate from lpComponent to want, paying off any necessary debt for the conversion
     function _withdrawSome(uint256 _amount) internal override returns (uint256) {
 
         return _amount;
     }
 
-    /// @notice Harvest from strategy mechanics, realizing increase in underlying position
-    function harvest() external whenNotPaused returns (HarvestData memory) {
+    /// @dev Harvest from strategy mechanics, realizing increase in underlying position
+    function harvest() external whenNotPaused returns (uint256 harvested) {
         _onlyAuthorizedActors();
 
-        HarvestData memory harvestData;
 
         uint256 _before = IERC20Upgradeable(want).balanceOf(address(this));
 
-        /// @dev Write your code here
+        // Write your code here 
 
-        
-        /// @dev Harvest event that every strategy MUST have
-        emit Harvest(harvestData.wantProcessed.sub(_before), block.number);
 
-        return harvestData;
+        uint256 earned = IERC20Upgradeable(want).balanceOf(address(this)).sub(_before);
+
+        /// @notice Keep this in so you get paid!
+        (uint256 governancePerformanceFee, uint256 strategistPerformanceFee) = _processPerformanceFees(earned);
+
+        /// @dev Harvest event that every strategy MUST have, see BaseStrategy
+        emit Harvest(earned, block.number);
+
+        return earned;
     }
+
+    /// @dev Rebalance, Compound or Pay off debt here
+    function tend() external whenNotPaused {
+    }
+
 
     /// ===== Internal Helper Functions =====
     

@@ -1,12 +1,12 @@
 # Yearn Strategy Brownie Mix
 
-# NOTE: README is TODO
 
 ## What you'll find here
 
-- Basic Solidity Smart Contract for creating your own Yearn Strategy ([`contracts/Strategy.sol`](contracts/Strategy.sol))
+- Basic Solidity Smart Contract for creating your own Yearn Strategy ([`contracts/MyStrategy.sol`](contracts/MyStrategy.sol))
 
 - Interfaces for some of the most used DeFi protocols on ethereum mainnet. ([`interfaces/`](`interfaces/`))
+- Dependencies for OpenZeppeling and other libraries. ([`deps/`](`deps/`))
 
 - Sample test suite that runs on mainnet fork. ([`tests/`](tests))
 
@@ -53,54 +53,44 @@ To deploy the demo Yearn Strategy in a development environment:
 1. Open the Brownie console. This automatically launches Ganache on a forked mainnet.
 
 ```bash
-$ brownie console
+  brownie console
 ```
 
-2. Create variables for the Yearn Vault and Want Token addresses. These were obtained from the Yearn Registry. Also, loan the Yearn governance multisig.
-
-```python
->>> vault = Vault.at("0xBFa4D8AA6d8a379aBFe7793399D3DdaCC5bBECBB")  # yvDAI (v0.2.2)
->>> token = Token.at("0x6b175474e89094c44da98b954eedeac495271d0f")  # DAI
->>> gov = "ychad.eth"  # ENS for Yearn Governance Multisig
+2. Run Scripts for Deployment
+```
+  brownie run deploy
 ```
 
-3. Deploy the [`Strategy.sol`](contracts/Strategy.sol) contract.
+Deployment will set up a Vault, Controller and deploy your strategy
 
-```python
->>> strategy = Strategy.deploy(vault, {"from": accounts[0]})
-Transaction sent: 0xc8a35b3ecbbed196a344ed6b5c7ee6f50faf9b7eee836044d1c7ffe10093ef45
-  Gas price: 0.0 gwei   Gas limit: 6721975
-  Flashloan.constructor confirmed - Block: 9995378   Gas used: 796934 (11.86%)
-  Flashloan deployed at: 0x3194cBDC3dbcd3E11a07892e7bA5c3394048Cc87
-```
+## Adding Configuration
 
-4. Approve the strategy for the Vault. We must do this because we only approved Strategies can pull funding from the Vault.
+## Specifying additional testing steps and checks
+In order to snapshot certain balances, we use the Snapshot manager.
+This class helps with verifying that ordinary procedures (deposit, withdraw, harvest), happened correctly.
 
-```python
-# 1000 DAI debt limit, no rate limit, 50 bps strategist fee
->>> vault.addStrategy(strategy, Wei("1000 ether"), 2 ** 256 - 1, 50, {"from": gov})
-Transaction sent: 0xa70b90eb9a9899e8f6e709c53a436976315b4279c4b6797d0a293e169f94d5b4
-  Gas price: 0.0 gwei   Gas limit: 6721975
-  Transaction confirmed - Block: 9995379   Gas used: 21055 (0.31%)
-```
+See `/helpers/StrategyCoreResolver.py` for the base resolver that all strategies use
+Edit `/helpers/StrategyResolver.py` to specify and verify how an ordinary harvest should behave
 
-5. Now we are ready to put our strategy into action!
-
-```python
->>> harvest_tx = strategy.harvest({"from": accounts[0]})  # perform as many time as desired...
-```
+## Add your custom testing
+Check the various tests under `/tests`
+The file `/tests/test_custom` is already set up for you to write custom tests there
 
 ## Implementing Strategy Logic
 
-[`contracts/Strategy.sol`](contracts/Strategy.sol) is where you implement your own logic for your strategy. In particular:
-
-* Create a descriptive name for your strategy via `Strategy.name()`.
-* Invest your want tokens via `Strategy.adjustPosition()`.
-* Take profits and report losses via `Strategy.prepareReturn()`.
-* Unwind enough of your position to payback withdrawals via `Strategy.liquidatePosition()`.
-* Unwind all of your positions via `Strategy.exitPosition()`.
-* Fill in a way to estimate the total `want` tokens managed by the strategy via `Strategy.estimatedTotalAssets()`.
-* Migrate all the positions managed by your strategy via `Strategy.prepareMigration()`.
+[`contracts/MyStrategy.sol`](contracts/MyStrategy.sol) is where you implement your own logic for your strategy. In particular:
+## TODO CHANGE THESE
+* Customize the `initialize` Method
+* Set a name in `MyStrategy.getName()`
+* Set a version in `MyStrategy.version()`
+* Write a way to calculate the want invested in `MyStrategy.balanceOfPool()`
+* Write a method that returns true if the Strategy should be tended in `MyStrategy.isTendable()`
+* Set a version in `MyStrategy.version()`
+* Invest your want tokens via `Strategy._deposit()`.
+* Take profits and repay debt via `Strategy.harvest()`.
+* Unwind enough of your position to payback withdrawals via `Strategy._withdrawSome()`.
+* Unwind all of your positions via `Strategy._withdrawAll()`.
+* Rebalance the Strategy positions via `Strategy.tend()`.
 * Make a list of all position tokens that should be protected against movements via `Strategy.protectedTokens()`.
 
 ## Testing
@@ -146,13 +136,13 @@ To view a tree map of how the transaction executed:
 
 See the [Brownie documentation](https://eth-brownie.readthedocs.io/en/stable/core-transactions.html) for more detailed information on debugging failed transactions.
 
-<!--
+
 ## Deployment
 
 When you are finished testing and ready to deploy to the mainnet:
 
 1. [Import a keystore](https://eth-brownie.readthedocs.io/en/stable/account-management.html#importing-from-a-private-key) into Brownie for the account you wish to deploy from.
-2. Edit [`scripts/deployment.py`](scripts/deployment.py) and add your keystore ID according to the comments.
+2. Edit [`scripts/deploy.py`](scripts/deploy.py) and add your keystore ID according to the comments.
 3. Run the deployment script on the mainnet using the following command:
 
 ```bash
@@ -160,7 +150,7 @@ $ brownie run deployment --network mainnet
 ```
 
 You will be prompted to enter your keystore password, and then the contract will be deployed.
--->
+
 
 ## Known issues
 
@@ -172,3 +162,4 @@ If you are using Ganache to fork a network, then you may have issues with the bl
 
 - Yearn [Discord channel](https://discord.com/invite/6PNv2nF/)
 - Brownie [Gitter channel](https://gitter.im/eth-brownie/community)
+- Alex The Entreprenerd on [Twitter](https://twitter.com/GalloDaSballo)

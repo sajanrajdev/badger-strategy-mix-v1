@@ -1,12 +1,11 @@
-# Yearn Strategy Brownie Mix
-
+# Badger Strategy V1 Brownie Mix
 
 ## What you'll find here
 
 - Basic Solidity Smart Contract for creating your own Yearn Strategy ([`contracts/MyStrategy.sol`](contracts/MyStrategy.sol))
 
 - Interfaces for some of the most used DeFi protocols on ethereum mainnet. ([`interfaces/`](`interfaces/`))
-- Dependencies for OpenZeppeling and other libraries. ([`deps/`](`deps/`))
+- Dependencies for OpenZeppelin and other libraries. ([`deps/`](`deps/`))
 
 - Sample test suite that runs on mainnet fork. ([`tests/`](tests))
 

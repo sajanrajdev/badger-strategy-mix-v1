@@ -1,4 +1,7 @@
 from helpers.StrategyCoreResolver import StrategyCoreResolver
+from rich.console import Console
+
+console = Console()
 
 class StrategyResolver(StrategyCoreResolver):
     def confirm_harvest(self, before, after, tx):

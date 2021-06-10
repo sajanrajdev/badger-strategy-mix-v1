@@ -69,12 +69,15 @@ def deploy():
     [DEFAULT_GOV_PERFORMANCE_FEE, DEFAULT_PERFORMANCE_FEE, DEFAULT_WITHDRAWAL_FEE]
   )
 
+  ## Tool that verifies bytecode (run independetly) <- Webapp for anyone to verify
+
   ## Set up tokens
   want = interface.IERC20(WANT)
   lpComponent = interface.IERC20(LP_COMPONENT)
   rewardToken = interface.IERC20(REWARD_TOKEN)
 
   ## Wire up Controller to Strart
+  ## In testing will pass, but on live it will fail
   controller.approveStrategy(WANT, strategy, {"from": governance})
   controller.setStrategy(WANT, strategy, {"from": deployer})
 
@@ -85,7 +88,7 @@ def deploy():
     ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", WANT],
     deployer,
     9999999999999999,
-    {"from": deployer, "value": 100000000000000000000}
+    {"from": deployer, "value": 100000000000000000}
   )
 
   return DotMap(

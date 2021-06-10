@@ -1,5 +1,7 @@
 # Yearn Strategy Brownie Mix
 
+# NOTE: README is TODO
+
 ## What you'll find here
 
 - Basic Solidity Smart Contract for creating your own Yearn Strategy ([`contracts/Strategy.sol`](contracts/Strategy.sol))

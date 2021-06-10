@@ -228,11 +228,11 @@ def test_withdraw_other(deployed):
     controller = deployed.controller
     strategy = deployed.strategy
     want = deployed.want
+    randomUser = accounts[6]
 
     startingBalance = want.balanceOf(deployer)
 
     depositAmount = Wei("1 ether")
-    print(getTokenMetadata(want.address), startingBalance)
     assert startingBalance >= depositAmount
 
     # Deposit
@@ -278,112 +278,69 @@ def test_withdraw_other(deployed):
     assert mockToken.balanceOf(controller) == mockAmount
 
 
-# @pytest.mark.skip()
-# @pytest.mark.parametrize("settConfig", settTestConfig)
-# def test_single_user_harvest_flow_remove_fees(settConfig):
-#     assert False
-#     # suiteName = "test_single_user_harvest_flow_remove_fees" + ": " + settConfig
-#     # testRecorder = TestRecorder(suiteName)
+def test_single_user_harvest_flow_remove_fees(deployed):
+    deployer = deployed.deployer
+    ## TODO: Separate into separate fixutres, because it's cooler
+    vault = deployed.vault
+    sett = deployed.sett
+    controller = deployed.controller
+    strategy = deployed.strategy
+    want = deployed.want
+    randomUser = accounts[6]
+    snap = SnapshotManager(vault, strategy, controller, "StrategySnapshot")
 
-#     # badger = badger_single_sett(settConfig['id'])
-#     # controller = badger.getController(settConfig['id'])
-#     # sett = badger.getSett(settConfig['id'])
-#     # strategy = badger.getStrategy(settConfig['id'])
-#     # want = badger.getStrategyWant(settConfig['id'])
+    startingBalance = want.balanceOf(deployer)
 
-#     # deployer = badger.deployer
-#     # randomUser = accounts[6]
+    tendable = strategy.isTendable()
 
-#     # tendable = strategy.isTendable()
+    startingBalance = want.balanceOf(deployer)
 
-#     # startingBalance = want.balanceOf(deployer)
+    depositAmount = Wei("1 ether")
+    assert startingBalance >= depositAmount
 
-#     # depositAmount = Wei("1 ether")
-#     # assert startingBalance >= depositAmount
+    # Deposit
+    want.approve(sett, MaxUint256, {"from": deployer})
+    snap.settDeposit(depositAmount, {"from": deployer})
 
-#     # # Deposit
-#     # before = sett_snapshot(sett, strategy, deployer)
-#     # want.approve(sett, MaxUint256, {"from": deployer})
-#     # sett.deposit(depositAmount, {"from": deployer})
-#     # after = sett_snapshot(sett, strategy, deployer)
+    # Earn
+    snap.settEarn({"from": deployer})
 
-#     # confirm_deposit(before, after, deployer, depositAmount)
+    chain.sleep(days(0.5))
+    chain.mine()
 
-#     # # Earn
-#     # before = sett_snapshot(sett, strategy, deployer)
-#     # sett.earn({"from": deployer})
-#     # after = sett_snapshot(sett, strategy, deployer)
+    if tendable:
+        snap.settTend({"from": deployer})
 
-#     # confirm_earn(before, after)
+    chain.sleep(days(1))
+    chain.mine()
 
-#     # chain.sleep(days(0.5))
-#     # chain.mine()
+    with brownie.reverts("onlyAuthorizedActors"):
+        strategy.harvest({"from": randomUser})
 
-#     # if tendable:
-#     #     before = sett_snapshot(sett, strategy, deployer)
-#     #     tx = strategy.tend({"from": deployer})
-#     #     after = sett_snapshot(sett, strategy, deployer)
-#     #     testRecorder.add_record(EventRecord("Tend", tx.events, tx.timestamp))
 
-#     #     confirm_tend(before, after, deployer)
+    snap.settHarvest({"from": deployer})
 
-#     # chain.sleep(days(1))
-#     # chain.mine()
 
-#     # with brownie.reverts("onlyAuthorizedActors"):
-#     #     strategy.harvest({"from": randomUser})
+    ## NOTE: Some strats do not do this, change accordingly
+    assert want.balanceOf(controller.rewards()) > 0
 
-#     # before = sett_snapshot(sett, strategy, deployer)
-#     # tx = strategy.harvest({"from": deployer})
-#     # after = sett_snapshot(sett, strategy, deployer)
-#     # testRecorder.add_record(EventRecord("Harvest", tx.events, tx.timestamp))
-#     # testRecorder.print_to_file(suiteName + ".json")
+    chain.sleep(days(1))
+    chain.mine()
 
-#     # confirm_harvest(before, after, deployer)
+    if tendable:
+        snap.settTend({"from": deployer})
 
-#     # after_harvest = sett_snapshot(sett, strategy, deployer)
+    chain.sleep(days(3))
+    chain.mine()
 
-#     # # Harvesting on the HarvestMetaFarm does not increase the underlying position, it sends rewards to the rewardsTree
-#     # # For HarvestMetaFarm, we expect FARM rewards to be distributed to rewardsTree
-#     # if settConfig == "harvest.renCrv":
-#     #     assert want.balanceOf(controller.rewards() > 0)
+    snap.settHarvest({"from": deployer})
 
-#     # # For most Setts, harvesting should increase the underlying position
-#     # else:
-#     #     assert want.balanceOf(controller.rewards() > 0)
+    snap.settWithdrawAll({"from": deployer})
 
-#     # chain.sleep(days(1))
-#     # chain.mine()
+    endingBalance = want.balanceOf(deployer)
 
-#     # if tendable:
-#     #     tx = strategy.tend({"from": deployer})
-#     #     testRecorder.add_record(EventRecord("Tend", tx.events, tx.timestamp))
-
-#     # chain.sleep(days(3))
-#     # chain.mine()
-
-#     # before_harvest = sett_snapshot(sett, strategy, deployer)
-#     # tx = strategy.harvest({"from": deployer})
-#     # after_harvest = sett_snapshot(sett, strategy, deployer)
-#     # testRecorder.add_record(EventRecord("Harvest", tx.events, tx.timestamp))
-
-#     # harvested = tx.events["Harvest"][0]["harvested"]
-#     # if settConfig != "harvest.renCrv":
-#     #     assert harvested > 0
-#     #     assert (
-#     #         after_harvest.sett.pricePerFullShare > before_harvest.sett.pricePerFullShare
-#     #     )
-#     #     assert after_harvest.strategy.balanceOf > before_harvest.strategy.balanceOf
-
-#     # sett.withdrawAll({"from": deployer})
-
-#     # endingBalance = want.balanceOf(deployer)
-
-#     # report = {
-#     #     "time": "4 days",
-#     #     "gains": endingBalance - startingBalance,
-#     #     "gainsPercentage": (endingBalance - startingBalance) / startingBalance,
-#     # }
-
-#     # # testRecorder.add_record(EventRecord("Final Report", report, 0))
-#     # testRecorder.print_to_file(suiteName + ".json")
+    print("Report after 4 days")
+    print("Gains")
+    print(endingBalance - startingBalance)
+    print("gainsPercentage")
+    print((endingBalance - startingBalance) / startingBalance)

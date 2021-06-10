@@ -11,8 +11,10 @@ def test_is_profitable(deployed):
   strategy = deployed.strategy
   want = deployed.want
   randomUser = accounts[6]
-  
+
   initial_balance = want.balanceOf(deployer)
+  
+  settKeeper = accounts.at(vault.keeper(), force=True)
 
   snap = SnapshotManager(vault, strategy, controller, "StrategySnapshot")
 

@@ -79,7 +79,7 @@ The file `/tests/test_custom` is already set up for you to write custom tests th
 ## Implementing Strategy Logic
 
 [`contracts/MyStrategy.sol`](contracts/MyStrategy.sol) is where you implement your own logic for your strategy. In particular:
-## TODO CHANGE THESE
+
 * Customize the `initialize` Method
 * Set a name in `MyStrategy.getName()`
 * Set a version in `MyStrategy.version()`

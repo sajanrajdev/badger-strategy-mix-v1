@@ -16,7 +16,7 @@ import {
     BaseStrategy
 } from "../deps/BaseStrategy.sol";
 
-contract SettStrategy is BaseStrategy {
+contract MyStrategy is BaseStrategy {
     using SafeERC20Upgradeable for IERC20Upgradeable;
     using AddressUpgradeable for address;
     using SafeMathUpgradeable for uint256;
@@ -31,15 +31,15 @@ contract SettStrategy is BaseStrategy {
         address _controller,
         address _keeper,
         address _guardian,
-        address[5] memory _wantConfig,
-        uint256[4] memory _feeConfig
+        address[3] memory _wantConfig,
+        uint256[3] memory _feeConfig
     ) public initializer {
         __BaseStrategy_init(_governance, _strategist, _controller, _keeper, _guardian);
 
         /// @dev Add config here
         want = _wantConfig[0];
         lpComponent = _wantConfig[1];
-        reward = _wantConfig[1];
+        reward = _wantConfig[2];
 
         performanceFeeGovernance = _feeConfig[0];
         performanceFeeStrategist = _feeConfig[1];

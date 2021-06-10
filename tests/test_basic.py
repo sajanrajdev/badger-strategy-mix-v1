@@ -12,7 +12,7 @@ def test_deploy_settings(deployed):
   """
     Verifies that you set up the Strategy properly
   """
-  strategy = deployed["strategy"]
+  strategy = deployed.strategy
 
   protected_tokens = strategy.getProtectedTokens()
 

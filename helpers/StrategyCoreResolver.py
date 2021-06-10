@@ -3,8 +3,6 @@ from decimal import Decimal
 
 from helpers.utils import (
     approx,
-    val,
-    snapSharesMatchForToken,
 )
 from helpers.constants import *
 from helpers.multicall import Call, as_wei, func
@@ -328,21 +326,3 @@ class StrategyCoreResolver:
         (Strategy Must Implement)
         """
         assert False
-
-    def confirm_rebase(self, before, after, value):
-        """
-        Check for proper rebases.
-
-        All share values should stay the same.
-        All DIGG balances should change in proportion to the rebase. (10% towards the new target)
-        """
-        console.print("=== Compare Rebase ===")
-        self.manager.printCompare(before, after)
-        assert snapSharesMatchForToken(before, after, "digg")
-
-        # TODO: Impl more accurate rebase checks.
-        # If rebase value is within configured deviation threshold the supply delta is 0.
-        if value > 10 ** 18:
-            assert after.balances("digg", "user") >= before.balances("digg", "user")
-        elif value < 10 ** 18:
-            assert after.balances("digg", "user") <= before.balances("digg", "user")

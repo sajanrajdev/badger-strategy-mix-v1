@@ -1,94 +1,23 @@
-from brownie import (
-    Controller,
-    interface,
-    chain,
-)
+from brownie import *
 from tabulate import tabulate
 from rich.console import Console
 from helpers.multicall import Multicall
-from helpers.registry import registry
-from helpers.sett.resolvers import (
-    SettCoreResolver,
-    StrategyBadgerLpMetaFarmResolver,
-    StrategyBasePancakeResolver,
-    StrategyHarvestMetaFarmResolver,
-    StrategySushiBadgerWbtcResolver,
-    StrategyBadgerRewardsResolver,
-    StrategySushiLpOptimizerResolver,
-    StrategyCurveGaugeResolver,
-    StrategyDiggRewardsResolver,
-    StrategySushiDiggWbtcLpOptimizerResolver,
-    StrategyDiggLpMetaFarmResolver,
-    StrategyUniGenericLpResolver,
+from helpers.utils import val
+
+from helpers.snapshot.snap import Snap
+
+from helpers.StrategyResolver import (
+    StrategyResolver
 )
-from helpers.utils import digg_shares_to_initial_fragments, val
-from scripts.systems.badger_system import BadgerSystem
 
 console = Console()
 
-
-def get_expected_strategy_deposit_location(badger: BadgerSystem, id):
-    if id == "native.badger":
-        # Rewards Staking
-        return badger.getSettRewards("native.badger")
-    if id == "native.uniBadgerWbtc":
-        # Rewards Staking
-        return badger.getSettRewards("native.uniBadgerWbtc")
-    if id == "native.renCrv":
-        # CRV Gauge
-        return registry.curve.pools.renCrv.gauge
-    if id == "native.sbtcCrv":
-        # CRV Gauge
-        return registry.curve.pools.sbtcCrv.gauge
-    if id == "native.tbtcCrv":
-        # CRV Gauge
-        return registry.curve.pools.tbtcCrv.gauge
-    if id == "harvest.renCrv":
-        # Harvest Vault
-        return registry.harvest.vaults.renCrv
-
-
-def is_curve_gauge_variant(name):
-    return (
-        name == "StrategyCurveGaugeRenBtcCrv"
-        or name == "StrategyCurveGaugeSbtcCrv"
-        or name == "StrategyCurveGaugeTbtcCrv"
-        or name == "StrategyCurveGaugex"
-    )
-
-
-class Snap:
-    def __init__(self, data, block, entityKeys):
-        self.data = data
-        self.block = block
-        self.entityKeys = entityKeys
-
-    # ===== Getters =====
-
-    def balances(self, tokenKey, accountKey):
-        return self.data["balances." + tokenKey + "." + accountKey]
-
-    def shares(self, tokenKey, accountKey):
-        return self.data["shares." + tokenKey + "." + accountKey]
-
-    def get(self, key):
-        if key not in self.data.keys():
-            raise Exception("Key {} not found in snap data".format(key))
-        return self.data[key]
-
-    # ===== Setters =====
-
-    def set(self, key, value):
-        self.data[key] = value
-
-
 class SnapshotManager:
-    def __init__(self, badger: BadgerSystem, key):
-        self.badger = badger
+    def __init__(self, sett, strategy, controller, key):
         self.key = key
-        self.sett = badger.getSett(key)
-        self.strategy = badger.getStrategy(key)
-        self.controller = Controller.at(self.sett.controller())
+        self.sett = sett
+        self.strategy = strategy
+        self.controller = controller
         self.want = interface.IERC20(self.sett.token())
         self.resolver = self.init_resolver(self.strategy.getName())
         self.snaps = {}
@@ -143,39 +72,9 @@ class SnapshotManager:
     def addEntity(self, key, entity):
         self.entities[key] = entity
 
-    def init_sett_resolver(self, version):
-        print("init_sett_resolver", version)
-        return SettCoreResolver(self)
-
     def init_resolver(self, name):
         print("init_resolver", name)
-        if name == "StrategyHarvestMetaFarm":
-            return StrategyHarvestMetaFarmResolver(self)
-        if name == "StrategyBadgerRewards":
-            return StrategyBadgerRewardsResolver(self)
-        if name == "StrategyBadgerLpMetaFarm":
-            return StrategyBadgerLpMetaFarmResolver(self)
-        if is_curve_gauge_variant(name):
-            return StrategyCurveGaugeResolver(self)
-        if name == "StrategyCurveGauge":
-            return StrategyCurveGaugeResolver(self)
-        if name == "StrategySushiBadgerWbtc":
-            return StrategySushiBadgerWbtcResolver(self)
-        if name == "StrategySushiLpOptimizer":
-            print("StrategySushiLpOptimizerResolver")
-            return StrategySushiLpOptimizerResolver(self)
-        if name == "StrategyDiggRewards":
-            return StrategyDiggRewardsResolver(self)
-        if name == "StrategySushiDiggWbtcLpOptimizer":
-            return StrategySushiDiggWbtcLpOptimizerResolver(self)
-        if name == "StrategyDiggLpMetaFarm":
-            return StrategyDiggLpMetaFarmResolver(self)
-        if name == "StrategyPancakeLpOptimizer":
-            return StrategyBasePancakeResolver(self)
-        if name == "StrategyUniGenericLp":
-            return StrategyUniGenericLpResolver(self)
-        if name == "StabilizeStrategyDiggV1":
-            return StabilizeStrategyDiggV1Resolver(self)
+        return StrategyResolver(self)
 
     def settTend(self, overrides, confirm=True):
         user = overrides["from"].address
@@ -185,24 +84,6 @@ class SnapshotManager:
         after = self.snap(trackedUsers)
         if confirm:
             self.resolver.confirm_tend(before, after, tx)
-
-    def settTendViaManager(self, strategy, overrides, confirm=True):
-        user = overrides["from"].address
-        trackedUsers = {"user": user}
-        before = self.snap(trackedUsers)
-        tx = self.badger.badgerRewardsManager.tend(strategy, overrides)
-        after = self.snap(trackedUsers)
-        if confirm:
-            self.resolver.confirm_tend(before, after, tx)
-
-    def settHarvestViaManager(self, strategy, overrides, confirm=True):
-        user = overrides["from"].address
-        trackedUsers = {"user": user}
-        before = self.snap(trackedUsers)
-        tx = self.badger.badgerRewardsManager.harvest(strategy, overrides)
-        after = self.snap(trackedUsers)
-        if confirm:
-            self.resolver.confirm_harvest(before, after, tx)
 
     def settHarvest(self, overrides, confirm=True):
         user = overrides["from"].address
@@ -276,8 +157,6 @@ class SnapshotManager:
                 return val(value)
             # Ether-scaled balances
             # TODO: Handle based on token decimals
-            if ".digg" in key and "shares" not in key:
-                return val(value, decimals=9)
             if (
                 "balance" in key
                 or key == "sett.available"
@@ -285,18 +164,6 @@ class SnapshotManager:
                 or key == "sett.totalSupply"
             ):
                 return val(value)
-            # DIGG Shares
-            if "shares" in key or "diggFaucet.earned" in key:
-                # We expect to have a known digg instance in the strategy in this case
-                name = self.strategy.getName()
-                digg = ""
-
-                if name == "StrategyDiggRewards":
-                    digg = interface.IDigg(self.strategy.want())
-                else:
-                    digg = interface.IDigg(self.strategy.digg())
-
-                return digg_shares_to_initial_fragments(digg, value)
         return value
 
     def diff(self, a, b):

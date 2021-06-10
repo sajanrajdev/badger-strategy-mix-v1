@@ -1,11 +1,4 @@
-from enum import Enum
-from helpers.utils import digg_shares, val
-
 from dotmap import DotMap
-
-
-def as_digg_shares(value):
-    return digg_shares(value)
 
 
 def as_wei(value):

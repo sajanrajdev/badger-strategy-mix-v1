@@ -25,25 +25,13 @@ Alice can then redeem those shares using `Vault.withdrawAll()` for the correspon
 
 ## Installation and Setup
 
-1. [Install Brownie](https://eth-brownie.readthedocs.io/en/stable/install.html) & [Ganache-CLI](https://github.com/trufflesuite/ganache-cli), if you haven't already.
+1. Use this code by clicking on Use This Template
+2. Download the code with ```git clone URL_FROM_GITHUB```
+3. [Install Brownie](https://eth-brownie.readthedocs.io/en/stable/install.html) & [Ganache-CLI](https://github.com/trufflesuite/ganache-cli), if you haven't already.
+4. Copy the `.env.example` file, and rename it to `.env`
+5. Sign up for [Infura](https://infura.io/) and generate an API key. Store it in the `WEB3_INFURA_PROJECT_ID` environment variable.
+6. Sign up for [Etherscan](www.etherscan.io) and generate an API key. This is required for fetching source codes of the mainnet contracts we will be interacting with. Store the API key in the `ETHERSCAN_TOKEN` environment variable.
 
-2. Sign up for [Infura](https://infura.io/) and generate an API key. Store it in the `WEB3_INFURA_PROJECT_ID` environment variable.
-
-```bash
-export WEB3_INFURA_PROJECT_ID=YourProjectID
-```
-
-3. Sign up for [Etherscan](www.etherscan.io) and generate an API key. This is required for fetching source codes of the mainnet contracts we will be interacting with. Store the API key in the `ETHERSCAN_TOKEN` environment variable.
-
-```bash
-export ETHERSCAN_TOKEN=YourApiToken
-```
-
-4. Download the mix.
-
-```bash
-brownie bake yearn-strategy
-```
 
 ## Basic Use
 
@@ -62,18 +50,42 @@ To deploy the demo Yearn Strategy in a development environment:
 
 Deployment will set up a Vault, Controller and deploy your strategy
 
+3. Run the test deployment in the console and interact with it
+```
+  brownie console
+  deployed = run("deploy")
+
+  ## Takes a minute or so
+  Transaction sent: 0xa0009814d5bcd05130ad0a07a894a1add8aa3967658296303ea1f8eceac374a9
+  Gas price: 0.0 gwei   Gas limit: 12000000   Nonce: 9
+  UniswapV2Router02.swapExactETHForTokens confirmed - Block: 12614073   Gas used: 88626 (0.74%)
+
+  ## Now you can interact with the contracts via the console
+  >>> deployed
+  {
+      'controller': 0x602C71e4DAC47a042Ee7f46E0aee17F94A3bA0B6,
+      'deployer': 0x66aB6D9362d4F35596279692F0251Db635165871,
+      'lpComponent': 0x028171bCA77440897B824Ca71D1c56caC55b68A3,
+      'rewardToken': 0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9,
+      'sett': 0x6951b5Bd815043E3F842c1b026b0Fa888Cc2DD85,
+      'strategy': 0x9E4c14403d7d9A8A782044E86a93CAE09D7B2ac9,
+      'vault': 0x6951b5Bd815043E3F842c1b026b0Fa888Cc2DD85,
+      'want': 0x6B175474E89094C44Da98b954EedeAC495271d0F
+  }
+  >>>
+
+  ## Deploy also uniswaps want to the deployer (accounts[0]), so you have funds to play with!
+  >>> deployed.want.balanceOf(a[0])
+  240545908911436022026
+
+```
+
 ## Adding Configuration
 
-## Specifying additional testing steps and checks
-In order to snapshot certain balances, we use the Snapshot manager.
-This class helps with verifying that ordinary procedures (deposit, withdraw, harvest), happened correctly.
-
-See `/helpers/StrategyCoreResolver.py` for the base resolver that all strategies use
-Edit `/helpers/StrategyResolver.py` to specify and verify how an ordinary harvest should behave
-
-## Add your custom testing
-Check the various tests under `/tests`
-The file `/tests/test_custom` is already set up for you to write custom tests there
+To ship a valid strategy, that will be evaluated to deploy on mainnet, with potentially $100M + in TVL, you need to:
+1. Write the Strategy Code in MyStrategy.sol
+2. Customize the StrategyResolver so that snapshot testing can verify that operations happened correctly
+3. Write any extra test to confirm that the strategy is working properly
 
 ## Implementing Strategy Logic
 
@@ -92,6 +104,19 @@ The file `/tests/test_custom` is already set up for you to write custom tests th
 * Rebalance the Strategy positions via `Strategy.tend()`.
 * Make a list of all position tokens that should be protected against movements via `Strategy.protectedTokens()`.
 
+
+## Specifying checks for ordinary operations in config/StrategyResolver
+In order to snapshot certain balances, we use the Snapshot manager.
+This class helps with verifying that ordinary procedures (deposit, withdraw, harvest), happened correctly.
+
+See `/helpers/StrategyCoreResolver.py` for the base resolver that all strategies use
+Edit `/config/StrategyResolver.py` to specify and verify how an ordinary harvest should behave
+
+## Add your custom testing
+Check the various tests under `/tests`
+The file `/tests/test_custom` is already set up for you to write custom tests there
+
+
 ## Testing
 
 To run the tests:
@@ -100,9 +125,6 @@ To run the tests:
 brownie test
 ```
 
-The example tests provided in this mix start by deploying and approving your [`Strategy.sol`](contracts/Strategy.sol) contract. This ensures that the loan executes succesfully without any custom logic. Once you have built your own logic, you should edit [`tests/test_flashloan.py`](tests/test_flashloan.py) and remove this initial funding logic.
-
-See the [Brownie documentation](https://eth-brownie.readthedocs.io/en/stable/tests-pytest-intro.html) for more detailed information on testing your project.
 
 ## Debugging Failed Transactions
 
@@ -141,8 +163,7 @@ See the [Brownie documentation](https://eth-brownie.readthedocs.io/en/stable/cor
 When you are finished testing and ready to deploy to the mainnet:
 
 1. [Import a keystore](https://eth-brownie.readthedocs.io/en/stable/account-management.html#importing-from-a-private-key) into Brownie for the account you wish to deploy from.
-2. Edit [`scripts/deploy.py`](scripts/deploy.py) and add your keystore ID according to the comments.
-3. Run the deployment script on the mainnet using the following command:
+2. Run [`scripts/deploy.py`](scripts/deploy.py) with the following command
 
 ```bash
 $ brownie run deployment --network mainnet

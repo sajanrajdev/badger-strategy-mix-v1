@@ -4,15 +4,14 @@ from config import (
   WANT,
   LP_COMPONENT,
   REWARD_TOKEN,
-  DEFAULT_GOV_PERFORMANCE_FEE,
-  DEFAULT_PERFORMANCE_FEE,
-  DEFAULT_WITHDRAWAL_FEE
+  PROTECTED_TOKENS,
+  FEES
 )
 from dotmap import DotMap
 
 
 def main():
-  deploy()
+  return deploy()
 
 def deploy():
   """
@@ -65,8 +64,8 @@ def deploy():
     controller,
     keeper,
     guardian,
-    [WANT, LP_COMPONENT, REWARD_TOKEN],
-    [DEFAULT_GOV_PERFORMANCE_FEE, DEFAULT_PERFORMANCE_FEE, DEFAULT_WITHDRAWAL_FEE]
+    PROTECTED_TOKENS,
+    FEES
   )
 
   ## Tool that verifies bytecode (run independetly) <- Webapp for anyone to verify

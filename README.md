@@ -14,10 +14,15 @@ This mix is configured for use with [Ganache](https://github.com/trufflesuite/ga
 ## Installation and Setup
 
 1. Use this code by clicking on Use This Template
+
 2. Download the code with ```git clone URL_FROM_GITHUB```
+
 3. [Install Brownie](https://eth-brownie.readthedocs.io/en/stable/install.html) & [Ganache-CLI](https://github.com/trufflesuite/ganache-cli), if you haven't already.
+
 4. Copy the `.env.example` file, and rename it to `.env`
+
 5. Sign up for [Infura](https://infura.io/) and generate an API key. Store it in the `WEB3_INFURA_PROJECT_ID` environment variable.
+
 6. Sign up for [Etherscan](www.etherscan.io) and generate an API key. This is required for fetching source codes of the mainnet contracts we will be interacting with. Store the API key in the `ETHERSCAN_TOKEN` environment variable.
 
 

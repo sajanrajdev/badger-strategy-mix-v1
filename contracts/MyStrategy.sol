@@ -100,7 +100,7 @@ contract MyStrategy is BaseStrategy {
     /// @dev invest the amount of want
     /// @notice When this function is called, the controller has already sent want to this
     /// @notice Just get the current balance and then invest accordingly
-    function _deposit(uint256 _want) internal override {
+    function _deposit(uint256 _amount) internal override {
     }
 
     /// @dev utility function to withdraw all that a account has deposited

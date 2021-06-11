@@ -304,7 +304,7 @@ abstract contract BaseStrategy is PausableUpgradeable, SettAccessControl {
     // ===== Abstract Functions: To be implemented by specific Strategies =====
 
     /// @dev Internal deposit logic to be implemented by Stratgies
-    function _deposit(uint256 _want) internal virtual;
+    function _deposit(uint256 _amount) internal virtual;
 
     function _postDeposit() internal virtual {
         //no-op by default

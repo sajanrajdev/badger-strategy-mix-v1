@@ -44,7 +44,7 @@ To deploy the demo Yearn Strategy in a development environment:
 Deployment will set up a Vault, Controller and deploy your strategy
 
 3. Run the test deployment in the console and interact with it
-```
+```python
   brownie console
   deployed = run("deploy")
 

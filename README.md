@@ -4,8 +4,8 @@
 
 - Basic Solidity Smart Contract for creating your own Badger Strategy ([`contracts/MyStrategy.sol`](contracts/MyStrategy.sol))
 
-- Interfaces for some of the most used DeFi protocols on ethereum mainnet. ([`interfaces`](`interfaces`))
-- Dependencies for OpenZeppelin and other libraries. ([`deps`](`deps`))
+- Interfaces for some of the most used DeFi protocols on ethereum mainnet. ([`interfaces`](interfaces))
+- Dependencies for OpenZeppelin and other libraries. ([`deps`](deps))
 
 - Sample test suite that runs on mainnet fork. ([`tests`](tests))
 

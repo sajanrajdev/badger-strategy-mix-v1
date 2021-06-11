@@ -2,6 +2,9 @@ import brownie
 from brownie import *
 from helpers.constants import MaxUint256
 from helpers.SnapshotManager import SnapshotManager
+from config import FEES
+
+MAX_BASIS = 10000
 
 def test_is_profitable(deployed):
   deployer = deployed.deployer
@@ -44,5 +47,14 @@ def test_is_profitable(deployed):
   snap.settWithdrawAll({"from": deployer})
 
   ending_balance = want.balanceOf(deployer)
-  
-  assert initial_balance <= ending_balance ## TODO: Account for fees
+
+  initial_balance_with_fees = initial_balance * (1 - (FEES[0] / MAX_BASIS) - (FEES[1] / MAX_BASIS) - (FEES[2] / MAX_BASIS))
+
+  print("Initial Balance")
+  print(initial_balance)
+  print("initial_balance_with_fees")
+  print(initial_balance_with_fees)
+  print("Ending Balance")
+  print(ending_balance)
+
+  assert ending_balance > initial_balance_with_fees

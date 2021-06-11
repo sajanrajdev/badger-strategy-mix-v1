@@ -4,10 +4,10 @@
 
 - Basic Solidity Smart Contract for creating your own Badger Strategy ([`contracts/MyStrategy.sol`](contracts/MyStrategy.sol))
 
-- Interfaces for some of the most used DeFi protocols on ethereum mainnet. ([`interfaces/`](`interfaces`))
-- Dependencies for OpenZeppelin and other libraries. ([`deps/`](`deps`))
+- Interfaces for some of the most used DeFi protocols on ethereum mainnet. ([`interfaces`](`interfaces`))
+- Dependencies for OpenZeppelin and other libraries. ([`deps`](`deps`))
 
-- Sample test suite that runs on mainnet fork. ([`tests/`](tests))
+- Sample test suite that runs on mainnet fork. ([`tests`](tests))
 
 This mix is configured for use with [Ganache](https://github.com/trufflesuite/ganache-cli) on a [forked mainnet](https://eth-brownie.readthedocs.io/en/stable/network-management.html#using-a-forked-development-network).
 

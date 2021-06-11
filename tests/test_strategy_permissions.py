@@ -290,101 +290,67 @@ def test_sett_pausing_permissions(deployed):
     sett.withdrawAll({"from": deployer})
 
 
-## TO FNISH
-# def test_sett_config_permissions(settConfig):
-#     # Setup
-#     badger = badger_single_sett(settConfig)
-#     state_setup(badger, settConfig)
-#     settId = settConfig["id"]
-#     sett = badger.getSett(settId)
-#     randomUser = accounts[8]
-#     assert sett.strategist() == AddressZero
-#     # End Setup
+def test_sett_config_permissions(deployed):
+    sett = deployed.sett
+    randomUser = accounts[6]
+    state_setup(deployed)
+    randomUser = accounts[8]
+    assert sett.strategist() == AddressZero
+    # End Setup
 
-#     # == Governance ==
-#     validActor = sett.governance()
+    # == Governance ==
+    validActor = sett.governance()
 
-#     # setMin
-#     with brownie.reverts("onlyGovernance"):
-#         sett.setMin(0, {"from": randomUser})
+    # setMin
+    with brownie.reverts("onlyGovernance"):
+        sett.setMin(0, {"from": randomUser})
 
-#     sett.setMin(0, {"from": validActor})
-#     assert sett.min() == 0
+    sett.setMin(0, {"from": validActor})
+    assert sett.min() == 0
 
-#     # setController
-#     with brownie.reverts("onlyGovernance"):
-#         sett.setController(AddressZero, {"from": randomUser})
+    # setController
+    with brownie.reverts("onlyGovernance"):
+        sett.setController(AddressZero, {"from": randomUser})
 
-#     sett.setController(AddressZero, {"from": validActor})
-#     assert sett.controller() == AddressZero
+    sett.setController(AddressZero, {"from": validActor})
+    assert sett.controller() == AddressZero
 
-#     # setStrategist
-#     with brownie.reverts("onlyGovernance"):
-#         sett.setStrategist(validActor, {"from": randomUser})
+    # setStrategist
+    with brownie.reverts("onlyGovernance"):
+        sett.setStrategist(validActor, {"from": randomUser})
 
-#     sett.setStrategist(validActor, {"from": validActor})
-#     assert sett.strategist() == validActor
+    sett.setStrategist(validActor, {"from": validActor})
+    assert sett.strategist() == validActor
 
-#     with brownie.reverts("onlyGovernance"):
-#         sett.setKeeper(validActor, {"from": randomUser})
+    with brownie.reverts("onlyGovernance"):
+        sett.setKeeper(validActor, {"from": randomUser})
 
-#     sett.setKeeper(validActor, {"from": validActor})
-#     assert sett.keeper() == validActor
+    sett.setKeeper(validActor, {"from": validActor})
+    assert sett.keeper() == validActor
 
 
 
-# def test_sett_earn_permissions(settConfig):
-#     # Setup
-#     badger = badger_single_sett(settConfig)
-#     state_setup(badger, settConfig)
-#     settId = settConfig["id"]
-#     sett = badger.getSett(settId)
-#     randomUser = accounts[8]
-#     assert sett.strategist() == AddressZero
-#     # End Setup
+def test_sett_earn_permissions(deployed):
+    # Setup
+    sett = deployed.sett
+    randomUser = accounts[6]
+    state_setup(deployed)
+    randomUser = accounts[8]
+    assert sett.strategist() == AddressZero
+    # End Setup
 
-#     # == Authorized Actors ==
-#     # earn
+    # == Authorized Actors ==
+    # earn
 
-#     authorizedActors = [
-#         sett.governance(),
-#         sett.keeper(),
-#     ]
+    authorizedActors = [
+        sett.governance(),
+        sett.keeper(),
+    ]
 
-#     with brownie.reverts("onlyAuthorizedActors"):
-#         sett.earn({"from": randomUser})
+    with brownie.reverts("onlyAuthorizedActors"):
+        sett.earn({"from": randomUser})
 
-#     for actor in authorizedActors:
-#         chain.snapshot()
-#         sett.earn({"from": actor})
-#         chain.revert()
-
-
-# @pytest.mark.skip()
-# @pytest.mark.parametrize(
-#     "settConfig",
-#     settTestConfig,
-# )
-# def test_controller_permissions(settConfig):
-#     # ===== Controller =====
-#     # initialize - no-one
-#     # initialized = true
-#     # earn _onlyApprovedForWant
-#     # withdraw (only current vault for underlying)
-
-#     # == Governance or Strategist ==
-#     # harvestExtraRewards _onlyGovernanceOrStrategist
-#     # inCaseTokensGetStuck _onlyGovernanceOrStrategist
-#     # inCaseStrategyTokenGetStuck _onlyGovernanceOrStrategist
-#     # setConverter _onlyGovernanceOrStrategist
-#     # setStrategy _onlyGovernanceOrStrategist
-#     # setVault _onlyGovernanceOrStrategist
-
-#     # == Governance Only ==
-#     # approveStrategy onlyGovernance
-#     # revokeStrategy onlyGovernance
-#     # setRewards onlyGovernance
-#     # setSplit onlyGovernance
-#     # setOneSplit onlyGovernance
-
-#     assert True
+    for actor in authorizedActors:
+        chain.snapshot()
+        sett.earn({"from": actor})
+        chain.revert()

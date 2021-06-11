@@ -6,7 +6,6 @@ from helpers.time import days
 
 def test_deposit_withdraw_single_user_flow(deployed):
     deployer = deployed.deployer
-    ## TODO: Separate into separate fixutres, because it's cooler
     vault = deployed.vault
     controller = deployed.controller
     strategy = deployed.strategy
@@ -123,7 +122,6 @@ def test_single_user_harvest_flow(deployed):
 
 def test_migrate_single_user(deployed):
     deployer = deployed.deployer
-    ## TODO: Separate into separate fixutres, because it's cooler
     vault = deployed.vault
     sett = deployed.sett
     controller = deployed.controller
@@ -280,7 +278,6 @@ def test_withdraw_other(deployed):
 
 def test_single_user_harvest_flow_remove_fees(deployed):
     deployer = deployed.deployer
-    ## TODO: Separate into separate fixutres, because it's cooler
     vault = deployed.vault
     sett = deployed.sett
     controller = deployed.controller

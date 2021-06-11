@@ -2,7 +2,7 @@ import brownie
 from brownie import *
 from helpers.constants import MaxUint256
 from helpers.SnapshotManager import SnapshotManager
-from config import FEES
+from config import DEFAULT_WITHDRAWAL_FEE
 
 MAX_BASIS = 10000
 
@@ -48,7 +48,7 @@ def test_is_profitable(deployed):
 
   ending_balance = want.balanceOf(deployer)
 
-  initial_balance_with_fees = initial_balance * (1 - (FEES[0] / MAX_BASIS) - (FEES[1] / MAX_BASIS) - (FEES[2] / MAX_BASIS))
+  initial_balance_with_fees = initial_balance * (1 - (DEFAULT_WITHDRAWAL_FEE / MAX_BASIS))
 
   print("Initial Balance")
   print(initial_balance)

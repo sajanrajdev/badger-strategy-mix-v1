@@ -11,18 +11,6 @@
 
 This mix is configured for use with [Ganache](https://github.com/trufflesuite/ganache-cli) on a [forked mainnet](https://eth-brownie.readthedocs.io/en/stable/network-management.html#using-a-forked-development-network).
 
-## How does it work for the User
-
-Let's say Alice holds 100 DAI and wants to start earning yield % on them.
-
-For this Alice needs to `DAI.approve(vault.address, 100)`.
-
-Then Alice will call `Vault.deposit(100)`.
-
-Vault will then transfer 100 DAI from Alice to itself, and mint Alice the corresponding shares.
-
-Alice can then redeem those shares using `Vault.withdrawAll()` for the corresponding DAI balance (exchanged at `Vault.pricePerShare()`).
-
 ## Installation and Setup
 
 1. Use this code by clicking on Use This Template

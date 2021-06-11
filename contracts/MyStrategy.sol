@@ -133,6 +133,11 @@ contract MyStrategy is BaseStrategy {
         return earned;
     }
 
+    // Alternative Harvest with Price received from harvester, used to avoid exessive front-running
+    function harvest(uint256 price) external whenNotPaused returns (uint256 harvested) {
+
+    }
+
     /// @dev Rebalance, Compound or Pay off debt here
     function tend() external whenNotPaused {
         _onlyAuthorizedActors();

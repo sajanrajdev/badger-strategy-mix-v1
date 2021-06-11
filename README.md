@@ -2,7 +2,7 @@
 
 ## What you'll find here
 
-- Basic Solidity Smart Contract for creating your own Yearn Strategy ([`contracts/MyStrategy.sol`](contracts/MyStrategy.sol))
+- Basic Solidity Smart Contract for creating your own Badger Strategy ([`contracts/MyStrategy.sol`](contracts/MyStrategy.sol))
 
 - Interfaces for some of the most used DeFi protocols on ethereum mainnet. ([`interfaces/`](`interfaces/`))
 - Dependencies for OpenZeppelin and other libraries. ([`deps/`](`deps/`))
@@ -28,7 +28,7 @@ This mix is configured for use with [Ganache](https://github.com/trufflesuite/ga
 
 ## Basic Use
 
-To deploy the demo Yearn Strategy in a development environment:
+To deploy the demo Badger Strategy in a development environment:
 
 1. Open the Brownie console. This automatically launches Ganache on a forked mainnet.
 
@@ -173,6 +173,7 @@ If you are using Ganache to fork a network, then you may have issues with the bl
 
 # Resources
 
+- Badger [Discord channel](https://discord.gg/phbqWTCjXU)
 - Yearn [Discord channel](https://discord.com/invite/6PNv2nF/)
 - Brownie [Gitter channel](https://gitter.im/eth-brownie/community)
 - Alex The Entreprenerd on [Twitter](https://twitter.com/GalloDaSballo)

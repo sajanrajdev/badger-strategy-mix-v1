@@ -1,7 +1,7 @@
 from helpers.constants import MaxUint256
 
 
-def test_deploy_settings(deployer, sett, strategy, want):
+def test_deploy_settings(deployer, sett, strategy, want, controller):
   """
     Verifies that you set up the Strategy properly
   """
@@ -19,14 +19,28 @@ def test_deploy_settings(deployer, sett, strategy, want):
   want.approve(sett, MaxUint256, {"from": deployer})
   sett.deposit(depositAmount, {"from": deployer})
 
-  # Did the deposit move funds into Strat and not in sett?
-  assert want.balanceOf(sett) == 0
+  available = sett.available()
+  assert available > 0 
+
+  sett.earn({"from": deployer})
+
+  ## TEST 1: Does the want get used in any way?
+  assert want.balanceOf(sett) == depositAmount - available
 
   # Did the strategy do something with the asset?
-  assert strategy.balanceOf(want) == 0
+  assert want.balanceOf(strategy) < available
+
+  # Use this if it should invest all
+  # assert want.balanceOf(strategy) == 0
 
   # Change to this if the strat is supposed to hodl and do nothing
   #assert strategy.balanceOf(want) = depositAmount
+
+  ## TEST 2: Is the Harvest profitable?
+  harvest = strategy.harvest({"from": deployer})
+  event = harvest.events["Harvest"][0]
+  # If it doesn't print, we don't want it
+  assert event["harvested"] > 0
 
 
   

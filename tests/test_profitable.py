@@ -3,7 +3,6 @@ from brownie import *
 from helpers.constants import MaxUint256
 from helpers.SnapshotManager import SnapshotManager
 
-# TODO: Put in separate file
 def test_is_profitable(deployed):
   deployer = deployed.deployer
   vault = deployed.vault

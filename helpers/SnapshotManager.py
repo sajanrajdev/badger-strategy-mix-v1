@@ -6,7 +6,7 @@ from helpers.utils import val
 
 from helpers.snapshot.snap import Snap
 
-from helpers.StrategyResolver import (
+from config.StrategyResolver import (
     StrategyResolver
 )
 

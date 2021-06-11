@@ -4,19 +4,11 @@ from helpers.constants import MaxUint256
 from helpers.SnapshotManager import SnapshotManager
 from helpers.time import days
 
-def test_deposit_withdraw_single_user_flow(deployed):
-    deployer = deployed.deployer
-    vault = deployed.vault
-    controller = deployed.controller
-    strategy = deployed.strategy
-    want = deployed.want
-
-    settKeeper = accounts.at(vault.keeper(), force=True)
-
+def test_deposit_withdraw_single_user_flow(deployer, vault, controller, strategy, want, settKeeper):
+    # Setup
     snap = SnapshotManager(vault, strategy, controller, "StrategySnapshot")
-
     randomUser = accounts[6]
-
+    #End Setup
 
     # Deposit
     assert want.balanceOf(deployer) > 0
@@ -33,10 +25,6 @@ def test_deposit_withdraw_single_user_flow(deployed):
     with brownie.reverts("onlyAuthorizedActors"):
         vault.earn({"from": randomUser})
 
-    min = vault.min()
-    max = vault.max()
-    remain = max - min
-
     snap.settEarn({"from": settKeeper})
 
     chain.sleep(15)
@@ -51,29 +39,16 @@ def test_deposit_withdraw_single_user_flow(deployed):
 
 
 
-def test_single_user_harvest_flow(deployed):
-    deployer = deployed.deployer
-    ## TODO: Separate into separate fixutres, because it's cooler
-    vault = deployed.vault
-    sett = deployed.sett
-    controller = deployed.controller
-    strategy = deployed.strategy
-    want = deployed.want
-
-    settKeeper = accounts.at(sett.keeper(), force=True)
-    strategyKeeper = accounts.at(strategy.keeper(), force=True)
-
+def test_single_user_harvest_flow(deployer, vault, sett, controller, strategy, want, settKeeper, strategyKeeper):
+    # Setup
     snap = SnapshotManager(vault, strategy, controller, "StrategySnapshot")
-
     randomUser = accounts[6]
-
     tendable = strategy.isTendable()
-
     startingBalance = want.balanceOf(deployer)
-
     depositAmount = startingBalance // 2
     assert startingBalance >= depositAmount
     assert startingBalance >= 0
+    # End Setup
 
     # Deposit
     want.approve(sett, MaxUint256, {"from": deployer})
@@ -120,20 +95,15 @@ def test_single_user_harvest_flow(deployed):
     snap.settWithdraw(depositAmount // 2 - 1, {"from": deployer})
 
 
-def test_migrate_single_user(deployed):
-    deployer = deployed.deployer
-    vault = deployed.vault
-    sett = deployed.sett
-    controller = deployed.controller
-    strategy = deployed.strategy
-    want = deployed.want
-    strategist = accounts.at(strategy.strategist(), force=True)
+def test_migrate_single_user(deployer, vault, sett, controller, strategy, want, strategist):
+    # Setup
     randomUser = accounts[6]
     snap = SnapshotManager(vault, strategy, controller, "StrategySnapshot")
 
     startingBalance = want.balanceOf(deployer)
     depositAmount = startingBalance // 2
     assert startingBalance >= depositAmount
+    # End Setup
 
     # Deposit
     want.approve(sett, MaxUint256, {"from": deployer})
@@ -215,23 +185,18 @@ def test_migrate_single_user(deployed):
     assert after["stratWant"] == 0
 
 
-def test_withdraw_other(deployed):
+def test_withdraw_other(deployer, sett, controller, strategy, want):
     """
     - Controller should be able to withdraw other tokens
     - Controller should not be able to withdraw core tokens
     - Non-controller shouldn't be able to do either
     """
-    deployer = deployed.deployer
-    sett = deployed.sett
-    controller = deployed.controller
-    strategy = deployed.strategy
-    want = deployed.want
+    # Setup
     randomUser = accounts[6]
-
     startingBalance = want.balanceOf(deployer)
-
     depositAmount = Wei("1 ether")
     assert startingBalance >= depositAmount
+    # End Setup
 
     # Deposit
     want.approve(sett, MaxUint256, {"from": deployer})
@@ -276,24 +241,16 @@ def test_withdraw_other(deployed):
     assert mockToken.balanceOf(controller) == mockAmount
 
 
-def test_single_user_harvest_flow_remove_fees(deployed):
-    deployer = deployed.deployer
-    vault = deployed.vault
-    sett = deployed.sett
-    controller = deployed.controller
-    strategy = deployed.strategy
-    want = deployed.want
+def test_single_user_harvest_flow_remove_fees(deployer, vault, sett, controller, strategy, want):
+    # Setup
     randomUser = accounts[6]
     snap = SnapshotManager(vault, strategy, controller, "StrategySnapshot")
-
     startingBalance = want.balanceOf(deployer)
-
     tendable = strategy.isTendable()
-
     startingBalance = want.balanceOf(deployer)
-
     depositAmount = Wei("1 ether")
     assert startingBalance >= depositAmount
+    # End Setup
 
     # Deposit
     want.approve(sett, MaxUint256, {"from": deployer})

@@ -4,13 +4,7 @@ from helpers.constants import MaxUint256, AddressZero
 from helpers.SnapshotManager import SnapshotManager
 from helpers.time import days
 
-def state_setup(deployed):
-    deployer = deployed.deployer
-    sett = deployed.sett
-    controller = deployed.controller
-    strategy = deployed.strategy
-    want = deployed.want
-
+def state_setup(deployer, sett, controller, strategy, want):
     startingBalance = want.balanceOf(deployer)
 
     settKeeper = accounts.at(sett.keeper(), force=True)
@@ -48,11 +42,8 @@ def state_setup(deployed):
     accounts.at(controller, force=True)
 
 
-def test_strategy_action_permissions(deployed):
-    controller = deployed.controller
-    strategy = deployed.strategy
-
-    state_setup(deployed)
+def test_strategy_action_permissions(deployer, sett, controller, strategy, want):
+    state_setup(deployer, sett, controller, strategy, want)
 
     tendable = strategy.isTendable()
 
@@ -110,9 +101,7 @@ def test_strategy_action_permissions(deployed):
 
 
 
-def test_strategy_config_permissions(deployed):
-    strategy = deployed.strategy
-
+def test_strategy_config_permissions(strategy):
     randomUser = accounts[6]
 
     randomUser = accounts[8]
@@ -168,15 +157,9 @@ def test_strategy_config_permissions(deployed):
         strategy.setPerformanceFeeStrategist(0, {"from": randomUser})
 
 
-def test_strategy_pausing_permissions(deployed):
+def test_strategy_pausing_permissions(deployer, controller, strategy, want):
     # Setup
-    deployer = deployed.deployer
-    sett = deployed.sett
-    strategy = deployed.strategy
-    randomUser = accounts[6]
-
-    state_setup(deployed)
-
+    state_setup(deployer, sett, controller, strategy, want)
     randomUser = accounts[8]
     # End Setup
 
@@ -228,18 +211,12 @@ def test_strategy_pausing_permissions(deployed):
         strategy.tend({"from": strategyKeeper})
 
 
-def test_sett_pausing_permissions(deployed):
+def test_sett_pausing_permissions(deployer, sett, controller, strategy, want):
     # Setup
-    deployer = deployed.deployer
-    sett = deployed.sett
-    randomUser = accounts[6]
-
-    state_setup(deployed)
-
+    state_setup(deployer, sett, controller, strategy, want)
     randomUser = accounts[8]
     # End Setup
 
-    randomUser = accounts[8]
     assert sett.strategist() == AddressZero
     # End Setup
 
@@ -290,10 +267,8 @@ def test_sett_pausing_permissions(deployed):
     sett.withdrawAll({"from": deployer})
 
 
-def test_sett_config_permissions(deployed):
-    sett = deployed.sett
-    randomUser = accounts[6]
-    state_setup(deployed)
+def test_sett_config_permissions(deployer, sett, controller, strategy, want):
+    state_setup(deployer, sett, controller, strategy, want)
     randomUser = accounts[8]
     assert sett.strategist() == AddressZero
     # End Setup
@@ -330,11 +305,9 @@ def test_sett_config_permissions(deployed):
 
 
 
-def test_sett_earn_permissions(deployed):
+def test_sett_earn_permissions(deployer, sett, controller, strategy, want):
     # Setup
-    sett = deployed.sett
-    randomUser = accounts[6]
-    state_setup(deployed)
+    state_setup(deployer, sett, controller, strategy, want)
     randomUser = accounts[8]
     assert sett.strategist() == AddressZero
     # End Setup

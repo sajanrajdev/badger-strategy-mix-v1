@@ -103,7 +103,7 @@ contract MyStrategy is BaseStrategy {
     function _deposit(uint256 _amount) internal override {
     }
 
-    /// @dev utility function to withdraw all that a account has deposited
+    /// @dev utility function to withdraw everything for migration
     function _withdrawAll() internal override {
     }
     /// @dev withdraw the specified amount of want, liquidate from lpComponent to want, paying off any necessary debt for the conversion

@@ -194,7 +194,7 @@ def test_withdraw_other(deployer, sett, controller, strategy, want):
     # Setup
     randomUser = accounts[6]
     startingBalance = want.balanceOf(deployer)
-    depositAmount = Wei("1 ether")
+    depositAmount = startingBalance // 2
     assert startingBalance >= depositAmount
     # End Setup
 
@@ -248,7 +248,7 @@ def test_single_user_harvest_flow_remove_fees(deployer, vault, sett, controller,
     startingBalance = want.balanceOf(deployer)
     tendable = strategy.isTendable()
     startingBalance = want.balanceOf(deployer)
-    depositAmount = Wei("1 ether")
+    depositAmount = startingBalance // 2
     assert startingBalance >= depositAmount
     # End Setup
 

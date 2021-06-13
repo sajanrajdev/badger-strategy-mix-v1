@@ -1,7 +1,8 @@
+from brownie import *
 from helpers.constants import MaxUint256
 
 
-def test_deploy_settings(deployer, sett, strategy, want, controller):
+def test_are_you_trying(deployer, sett, strategy, want):
   """
     Verifies that you set up the Strategy properly
   """
@@ -23,6 +24,8 @@ def test_deploy_settings(deployer, sett, strategy, want, controller):
   assert available > 0 
 
   sett.earn({"from": deployer})
+
+  chain.mine(100) # Mine so we get some interest
 
   ## TEST 1: Does the want get used in any way?
   assert want.balanceOf(sett) == depositAmount - available

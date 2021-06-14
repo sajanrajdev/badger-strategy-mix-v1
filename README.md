@@ -105,10 +105,19 @@ This class helps with verifying that ordinary procedures (deposit, withdraw, har
 See `/helpers/StrategyCoreResolver.py` for the base resolver that all strategies use
 Edit `/config/StrategyResolver.py` to specify and verify how an ordinary harvest should behave
 
+### StrategyResolver
+
+* Add Contract to check balances for in `get_strategy_destinations` (e.g. deposit pool, gauge, lpTokens)
+* Write `confirm_harvest` to verify that the harvest was profitable
+* Write `confirm_tend` to verify that tending will properly rebalance the strategy
+* Specify custom checks for ordinary deposits, withdrawals and calls to `earn` by setting up `hook_after_confirm_withdraw`, `hook_after_confirm_deposit`, `hook_after_earn`
+
 ## Add your custom testing
 Check the various tests under `/tests`
 The file `/tests/test_custom` is already set up for you to write custom tests there
-
+See example tests in `/tests/examples`
+All of the tests need to pass!
+If a test doesn't pass, you better have a great reason for it!
 
 ## Testing
 

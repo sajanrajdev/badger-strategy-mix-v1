@@ -27,6 +27,17 @@ This mix is configured for use with [Ganache](https://github.com/trufflesuite/ga
 
 6. Sign up for [Etherscan](www.etherscan.io) and generate an API key. This is required for fetching source codes of the mainnet contracts we will be interacting with. Store the API key in the `ETHERSCAN_TOKEN` environment variable.
 
+7. Install the dependencies in the package
+```
+## Javascript dependencies
+npm i
+
+## Python Dependencies
+pip install virtualenv
+virtualenv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
 
 ## Basic Use
 

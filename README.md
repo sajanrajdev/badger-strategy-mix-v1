@@ -91,10 +91,18 @@ Deployment will set up a Vault, Controller and deploy your strategy
 ## Adding Configuration
 
 To ship a valid strategy, that will be evaluated to deploy on mainnet, with potentially $100M + in TVL, you need to:
-1. Write the Strategy Code in MyStrategy.sol
-2. Add custom config in `/config/__init__.py`
+1. Add custom config in `/config/__init__.py`
+2. Write the Strategy Code in MyStrategy.sol
 3. Customize the StrategyResolver in `/config/StrategyResolver.py` so that snapshot testing can verify that operations happened correctly
 4. Write any extra test to confirm that the strategy is working properly
+
+## Add a custom want configuration
+Most strategies have a:
+* **want** the token you want to increase the balance of
+* **lpComponent** the token representing how much you deposited in the yield source
+* **reward** the token you are farming, that you'll swap into **want**
+
+Set these up in `/config/__init__.py` this mix will automatically be set up for testing and deploying after you do so
 
 ## Implementing Strategy Logic
 
@@ -112,7 +120,6 @@ To ship a valid strategy, that will be evaluated to deploy on mainnet, with pote
 * Unwind all of your positions via `Strategy._withdrawAll()`.
 * Rebalance the Strategy positions via `Strategy.tend()`.
 * Make a list of all position tokens that should be protected against movements via `Strategy.protectedTokens()`.
-
 
 ## Specifying checks for ordinary operations in config/StrategyResolver
 In order to snapshot certain balances, we use the Snapshot manager.

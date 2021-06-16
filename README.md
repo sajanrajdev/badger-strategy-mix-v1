@@ -92,8 +92,9 @@ Deployment will set up a Vault, Controller and deploy your strategy
 
 To ship a valid strategy, that will be evaluated to deploy on mainnet, with potentially $100M + in TVL, you need to:
 1. Write the Strategy Code in MyStrategy.sol
-2. Customize the StrategyResolver so that snapshot testing can verify that operations happened correctly
-3. Write any extra test to confirm that the strategy is working properly
+2. Add custom config in `/config/__init__.py`
+3. Customize the StrategyResolver in `/config/StrategyResolver.py` so that snapshot testing can verify that operations happened correctly
+4. Write any extra test to confirm that the strategy is working properly
 
 ## Implementing Strategy Logic
 

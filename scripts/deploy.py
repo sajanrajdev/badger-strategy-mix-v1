@@ -87,7 +87,7 @@ def deploy():
     ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", WANT],
     deployer,
     9999999999999999,
-    {"from": deployer, "value": 100000000000000000}
+    {"from": deployer, "value": 5000000000000000000}
   )
 
   return DotMap(

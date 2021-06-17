@@ -65,7 +65,8 @@ contract MyStrategy is BaseStrategy {
     function balanceOfPool() public override view returns (uint256) {
         return 0;
     }
-
+    
+    /// @dev Returns true if this strategy requires tending
     function isTendable() public override view returns (bool) {
         return true;
     }

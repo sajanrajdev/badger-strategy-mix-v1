@@ -3,6 +3,7 @@
 - Video Introduction: https://youtu.be/FVbhgPYW_D0
 
 - Example Project: https://github.com/Badger-Finance/wBTC-AAVE-Rewards-Farm-Badger-V1-Strategy
+- Full Project Walkthrough: https://www.youtube.com/watch?v=lTb0RFJJx2k
 
 ## What you'll find here
 

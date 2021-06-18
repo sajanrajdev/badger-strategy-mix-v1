@@ -4,6 +4,7 @@
 
 - Example Project: https://github.com/Badger-Finance/wBTC-AAVE-Rewards-Farm-Badger-V1-Strategy
 - Full Project Walkthrough: https://www.youtube.com/watch?v=lTb0RFJJx2k
+- 1-1 Mentoring (Valid throughout HackMoney and Gitcoin Round 10): https://calendly.com/alex-entreprenerd/badger-hackmoney-1-1
 
 ## What you'll find here
 

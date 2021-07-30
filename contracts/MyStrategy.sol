@@ -25,6 +25,9 @@ contract MyStrategy is BaseStrategy {
     address public lpComponent; // Token we provide liquidity with
     address public reward; // Token we farm and swap to want / lpComponent
 
+    // Used to signal to the Badger Tree that rewards where sent to it
+    event TreeDistribution(address indexed token, uint256 amount, uint256 indexed blockNumber, uint256 timestamp);
+
     function initialize(
         address _governance,
         address _strategist,
@@ -128,9 +131,27 @@ contract MyStrategy is BaseStrategy {
         /// @notice Keep this in so you get paid!
         (uint256 governancePerformanceFee, uint256 strategistPerformanceFee) = _processPerformanceFees(earned);
 
+        // TODO: If you are harvesting a reward token you're not compounding
+        // You probably still want to capture fees for it 
+        // // Process Sushi rewards if existing
+        // if (sushiAmount > 0) {
+        //     // Process fees on Sushi Rewards
+        //     // NOTE: Use this to receive fees on the reward token
+        //     _processRewardsFees(sushiAmount, SUSHI_TOKEN);
+
+        //     // Transfer balance of Sushi to the Badger Tree
+        //     // NOTE: Send reward to badgerTree
+        //     uint256 sushiBalance = IERC20Upgradeable(SUSHI_TOKEN).balanceOf(address(this));
+        //     IERC20Upgradeable(SUSHI_TOKEN).safeTransfer(badgerTree, sushiBalance);
+        //     
+        //     // NOTE: Signal the amount of reward sent to the badger tree
+        //     emit TreeDistribution(SUSHI_TOKEN, sushiBalance, block.number, block.timestamp);
+        // }
+
         /// @dev Harvest event that every strategy MUST have, see BaseStrategy
         emit Harvest(earned, block.number);
 
+        /// @dev Harvest must return the amount of want increased
         return earned;
     }
 
@@ -152,5 +173,12 @@ contract MyStrategy is BaseStrategy {
         governancePerformanceFee = _processFee(want, _amount, performanceFeeGovernance, IController(controller).rewards());
 
         strategistPerformanceFee = _processFee(want, _amount, performanceFeeStrategist, strategist);
+    }
+
+    /// @dev used to manage the governance and strategist fee on earned rewards, make sure to use it to get paid!
+    function _processRewardsFees(uint256 _amount, address token) internal returns (uint256 governanceRewardsFee, uint256 strategistRewardsFee) {
+        governanceRewardsFee = _processFee(token, _amount, performanceFeeGovernance, IController(controller).rewards());
+
+        strategistRewardsFee = _processFee(token, _amount, performanceFeeStrategist, strategist);
     }
 }

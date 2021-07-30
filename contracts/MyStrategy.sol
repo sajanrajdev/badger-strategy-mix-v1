@@ -176,9 +176,9 @@ contract MyStrategy is BaseStrategy {
     }
 
     /// @dev used to manage the governance and strategist fee on earned rewards, make sure to use it to get paid!
-    function _processRewardsFees(uint256 _amount, address token) internal returns (uint256 governanceRewardsFee, uint256 strategistRewardsFee) {
-        governanceRewardsFee = _processFee(token, _amount, performanceFeeGovernance, IController(controller).rewards());
+    function _processRewardsFees(uint256 _amount, address _token) internal returns (uint256 governanceRewardsFee, uint256 strategistRewardsFee) {
+        governanceRewardsFee = _processFee(_token, _amount, performanceFeeGovernance, IController(controller).rewards());
 
-        strategistRewardsFee = _processFee(token, _amount, performanceFeeStrategist, strategist);
+        strategistRewardsFee = _processFee(_token, _amount, performanceFeeStrategist, strategist);
     }
 }

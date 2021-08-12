@@ -25,7 +25,7 @@ def test_are_you_trying(deployer, sett, strategy, want):
 
   sett.earn({"from": deployer})
 
-  chain.mine(10000) # Mine so we get some interest
+  chain.sleep(10000*13) # Mine so we get some interest
 
   ## TEST 1: Does the want get used in any way?
   assert want.balanceOf(sett) == depositAmount - available

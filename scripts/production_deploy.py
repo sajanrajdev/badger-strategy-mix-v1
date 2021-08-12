@@ -31,8 +31,7 @@ def main():
     # Get actors from registry
     registry = BadgerRegistry.at(REGISTRY)
 
-    governance = registry.get("governance")
-    strategist = registry.get("goverance")
+    strategist = registry.get("governance")
     guardian = registry.get("guardian")
     keeper = registry.get("keeper")
     proxyAdmin = registry.get("proxyAdmin")

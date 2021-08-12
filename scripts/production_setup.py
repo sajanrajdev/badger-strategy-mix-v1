@@ -11,7 +11,7 @@ from brownie import (
 from config import (
   WANT,
   REWARD_TOKEN,
-  FEES,
+  LP_COMPONENT,
   REGISTRY
 )
 
@@ -101,7 +101,7 @@ def set_parameters(
         time.sleep(sleep_between_tx)
 
     console.print(
-        "[green]Fees existing or set at: [/green]", FEES
+        "[green]Fees existing or set at: [/green]", "1000, 1000, 50"
     )
 
     # Set permissioned accounts
@@ -156,6 +156,7 @@ def check_parameters(
     ):
     assert strategy.want() == WANT
     assert vault.token() == WANT
+    assert strategy.lpComponent() == LP_COMPONENT 
     assert strategy.reward() == REWARD_TOKEN 
 
     assert strategy.controller() == controller

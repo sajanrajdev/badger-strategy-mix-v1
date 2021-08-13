@@ -190,13 +190,31 @@ See the [Brownie documentation](https://eth-brownie.readthedocs.io/en/stable/cor
 When you are finished testing and ready to deploy to the mainnet:
 
 1. [Import a keystore](https://eth-brownie.readthedocs.io/en/stable/account-management.html#importing-from-a-private-key) into Brownie for the account you wish to deploy from.
-2. Run [`scripts/deploy.py`](scripts/deploy.py) with the following command
+2. Run [`scripts/production_deploy.py`](scripts/production_deploy.py) with the following command:
 
 ```bash
-$ brownie run deployment --network mainnet
+$ brownie run scripts/production_deploy.py --network mainnet
 ```
 
-You will be prompted to enter your keystore password, and then the contract will be deployed.
+You will be prompted to enter your desired deployer account and keystore password, and then the contracts will be deployed.
+
+3. This script will deploy a Controller, a SettV3 and your strategy under upgradable proxies. It will also set your deployer account as the governance for the three of them so that you can configure them and control them during testing stage. The script will also set the rest of the permissioned actors based on the latest entries from the Badger Registry.
+
+## Production Parameters Verification
+
+When you are done testing your contracts in production and they are ready for incorporation to the Badger ecosystem, the `production_setup` script can be ran to ensure that all parameters are set in compliance to Badger's production entities and contracts. You can run this script by doing the following:
+
+1. Open the [`scripts/production_setup.py`](scripts/production_setup.py) file and change the addresses for your strategy and vault mainnet addresses on lines 29 and 30.
+2. [Import a keystore](https://eth-brownie.readthedocs.io/en/stable/account-management.html#importing-from-a-private-key) into Brownie for the account currently set as `governance` for your contracts.
+3. Run [`scripts/production_setup.py`](scripts/production_setup.py) with the following command:
+
+```bash
+$ brownie run scripts/production_setup.py --network mainnet
+```
+
+You will be prompted to enter your governance account and keystore password, and then the the parameter verification and setup process will be executed.
+
+4. This script will compare all existing parameters against the latest production parameters stored on the Badger Registry. In case of a mismatch, the script will execute a transaction to change the parameter to the proper one. Notice that, as a final step, the script will change the governance address to Badger's Governance Multisig; this will effectively relinquish the contract control from your account to the Badger Governance. Additionally, the script performs a final check of all parameters against the registry parameters.
 
 
 ## Known issues

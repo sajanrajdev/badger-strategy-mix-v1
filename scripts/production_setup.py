@@ -15,6 +15,8 @@ from config import (
   REGISTRY
 )
 
+from helpers.constants import AddressZero
+
 import click
 from rich.console import Console
 
@@ -25,7 +27,7 @@ sleep_between_tx = 1
 def main():
     dev = connect_account()
 
-    # Add deployed Strategy and Vault contract here:
+    # Add deployed Strategy and Vault contracts here:
     strategy = MyStrategy.at("0x809990849D53a5109e0cb9C446137793B9f6f1Eb")
     vault = SettV3.at("0x6B2d4c4bb50274c5D4986Ff678cC971c0260E967")
 
@@ -45,8 +47,10 @@ def main():
     governance = registry.get("governance")
     guardian = registry.get("guardian")
     keeper = registry.get("keeper")
-    controller = registry.get("ProdController")
+    controller = registry.get("controller")
+    badgerTree = registry.get("badgerTree")
 
+    # Check production parameters and update any mismatch
     set_parameters(
         dev,
         strategy,
@@ -57,13 +61,15 @@ def main():
         controller,
     )
 
+    # Confirm all productions parameters
     check_parameters(
         strategy,
         vault,
         governance,
         guardian,
         keeper,
-        controller
+        controller,
+        badgerTree
     )
 
 
@@ -152,7 +158,8 @@ def check_parameters(
         governance,
         guardian,
         keeper,
-        controller
+        controller,
+        badgerTree
     ):
     assert strategy.want() == WANT
     assert vault.token() == WANT
@@ -173,6 +180,13 @@ def check_parameters(
     assert strategy.strategist() == governance
     assert strategy.governance() == governance
     assert vault.governance() == governance
+
+    # Not all strategies use the badgerTree
+    try:
+        if strategy.badgerTree() != AddressZero:
+            assert strategy.badgerTree() == badgerTree
+    except:
+        pass
 
     console.print("[blue]All Parameters checked![/blue]")
 

@@ -50,9 +50,6 @@ def main():
     for strat in strategies:
         want = wants[strategies.index(strat)]
 
-        print(strategies.index(strat))
-        print(want)
-
         controller.approveStrategy(want, strat, {"from": dev})
         time.sleep(sleep_between_tx)
         assert controller.approvedStrategies(want, strat) == True

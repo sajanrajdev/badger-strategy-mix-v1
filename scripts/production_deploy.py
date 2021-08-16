@@ -31,7 +31,8 @@ def main():
     the setup and production tests are simpler and more efficient. The rest of the permissioned actors 
     are set based on the latest entries from the Badger Registry.
     """
-    # get deployer account from 
+    
+    # Get deployer account from local keystore
     dev = connect_account()
 
     # Get actors from registry

@@ -24,8 +24,8 @@ def main():
     This script is enabled to handle multiple sets of strategy + vault + want. It must be
     called from the controller's governance account.
     """
-    
-    # dev must be the controller's governance
+
+    # dev must be the controller's governance (get from keystore)
     dev = connect_account()
 
     # NOTE: Add the strategies, vaults and their corresponding wants

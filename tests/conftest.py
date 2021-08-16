@@ -73,7 +73,7 @@ def deployed():
     FEES
   )
 
-  ## Tool that verifies bytecode (run independetly) <- Webapp for anyone to verify
+  ## Tool that verifies bytecode (run independently) <- Webapp for anyone to verify
 
   ## Set up tokens
   want = interface.IERC20(WANT)

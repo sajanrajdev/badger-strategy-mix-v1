@@ -33,7 +33,8 @@ def main():
     contract control from your account to the Badger Governance. Additionally, the script performs 
     a final check of all parameters against the registry parameters.
     """
-    
+
+    # Get deployer account from local keystore
     dev = connect_account()
 
     # Add deployed Strategy and Vault contracts here:

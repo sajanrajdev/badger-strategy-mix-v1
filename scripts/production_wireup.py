@@ -19,6 +19,12 @@ console = Console()
 sleep_between_tx = 1
 
 def main():
+    """
+    Sets a strategy and vault within the production controller based on a given want. 
+    This script is enabled to handle multiple sets of strategy + vault + want. It must be
+    called from the controller's governance account.
+    """
+    
     # dev must be the controller's governance
     dev = connect_account()
 

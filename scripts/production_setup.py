@@ -25,6 +25,15 @@ console = Console()
 sleep_between_tx = 1
 
 def main():
+    """
+    This script will compare all existing parameters against the latest production parameters
+    stored on the Badger Registry. In case of a mismatch, the script will execute a transaction 
+    to change the parameter to the proper one. Notice that, as a final step, the script will change 
+    the governance address to Badger's Governance Multisig; this will effectively relinquish the 
+    contract control from your account to the Badger Governance. Additionally, the script performs 
+    a final check of all parameters against the registry parameters.
+    """
+    
     dev = connect_account()
 
     # Add deployed Strategy and Vault contracts here:

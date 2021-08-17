@@ -115,7 +115,6 @@ def deploy_vault(
     dev,
     proxyAdmin
 ):
-    # Deploy Vault
 
     args = [
         WANT,

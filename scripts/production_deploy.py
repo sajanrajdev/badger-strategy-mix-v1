@@ -17,6 +17,8 @@ from config import (
   REGISTRY
 )
 
+from helpers.constants import AddressZero
+
 import click
 from rich.console import Console
 
@@ -42,6 +44,11 @@ def main():
     guardian = registry.get("guardian")
     keeper = registry.get("keeper")
     proxyAdmin = registry.get("proxyAdmin")
+
+    assert strategist != AddressZero
+    assert guardian != AddressZero
+    assert keeper != AddressZero
+    assert proxyAdmin != AddressZero
     
 
     # Deploy controller

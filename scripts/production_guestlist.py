@@ -13,6 +13,8 @@ from config import (
   REGISTRY
 )
 
+from helpers.constants import AddressZero
+
 import click
 from rich.console import Console
 
@@ -22,7 +24,7 @@ sleep_between_tx = 1
 
 def main():
     """
-    Deploys a guestlist contract, sets its parameters and assigns it to an spefici vault.
+    Deploys a guestlist contract, sets its parameters and assigns it to an specific vault.
     Additionally, the script transfers the guestlist's ownership to the Badger Governance.
     IMPORTANT: Must input the desired vault address to add the guestlist to as well as the
     different guestlist parameters below.
@@ -43,6 +45,9 @@ def main():
 
     governance = registry.get("governance")
     proxyAdmin = registry.get("proxyAdmin")
+
+    assert governance != AddressZero
+    assert proxyAdmin != AddressZero
 
     # Deploy guestlist
     guestlist = deploy_guestlist(dev, proxyAdmin, vaultAddr)

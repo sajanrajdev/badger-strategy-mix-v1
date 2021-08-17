@@ -60,6 +60,12 @@ def main():
     controller = registry.get("controller")
     badgerTree = registry.get("badgerTree")
 
+    assert governance != AddressZero
+    assert guardian != AddressZero
+    assert keeper != AddressZero
+    assert controller != AddressZero
+    assert badgerTree != AddressZero
+
     # Check production parameters and update any mismatch
     set_parameters(
         dev,

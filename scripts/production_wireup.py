@@ -14,6 +14,8 @@ from config import (
   REGISTRY
 )
 
+from helpers.constants import AddressZero
+
 console = Console()
 
 sleep_between_tx = 1
@@ -50,6 +52,7 @@ def main():
     # Get production controller from registry
     registry = BadgerRegistry.at(REGISTRY)
     controllerAddr = registry.get("controller")
+    assert controllerAddr != AddressZero
     controller = Controller.at(controllerAddr)
 
     # Wire up strategies

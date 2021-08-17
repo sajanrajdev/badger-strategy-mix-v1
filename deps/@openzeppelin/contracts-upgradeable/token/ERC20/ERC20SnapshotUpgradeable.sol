@@ -38,8 +38,8 @@ abstract contract ERC20SnapshotUpgradeable is Initializable, ERC20Upgradeable {
         __ERC20Snapshot_init_unchained();
     }
 
-    function __ERC20Snapshot_init_unchained() internal initializer {
-    }
+    function __ERC20Snapshot_init_unchained() internal initializer {}
+
     // Inspired by Jordi Baylina's MiniMeToken to record historical balances:
     // https://github.com/Giveth/minimd/blob/ea04d950eea153a04c51fa510b068b9dded390cb/contracts/MiniMeToken.sol
 
@@ -54,7 +54,7 @@ abstract contract ERC20SnapshotUpgradeable is Initializable, ERC20Upgradeable {
         uint256[] values;
     }
 
-    mapping (address => Snapshots) private _accountBalanceSnapshots;
+    mapping(address => Snapshots) private _accountBalanceSnapshots;
     Snapshots private _totalSupplySnapshots;
 
     // Snapshot ids increase monotonically, with the first value being 1. An id of 0 is invalid.
@@ -97,8 +97,13 @@ abstract contract ERC20SnapshotUpgradeable is Initializable, ERC20Upgradeable {
     /**
      * @dev Retrieves the balance of `account` at the time `snapshotId` was created.
      */
-    function balanceOfAt(address account, uint256 snapshotId) public view returns (uint256) {
-        (bool snapshotted, uint256 value) = _valueAt(snapshotId, _accountBalanceSnapshots[account]);
+    function balanceOfAt(address account, uint256 snapshotId)
+        public
+        view
+        returns (uint256)
+    {
+        (bool snapshotted, uint256 value) =
+            _valueAt(snapshotId, _accountBalanceSnapshots[account]);
 
         return snapshotted ? value : balanceOf(account);
     }
@@ -106,39 +111,48 @@ abstract contract ERC20SnapshotUpgradeable is Initializable, ERC20Upgradeable {
     /**
      * @dev Retrieves the total supply at the time `snapshotId` was created.
      */
-    function totalSupplyAt(uint256 snapshotId) public view returns(uint256) {
-        (bool snapshotted, uint256 value) = _valueAt(snapshotId, _totalSupplySnapshots);
+    function totalSupplyAt(uint256 snapshotId) public view returns (uint256) {
+        (bool snapshotted, uint256 value) =
+            _valueAt(snapshotId, _totalSupplySnapshots);
 
         return snapshotted ? value : totalSupply();
     }
 
-
     // Update balance and/or total supply snapshots before the values are modified. This is implemented
     // in the _beforeTokenTransfer hook, which is executed for _mint, _burn, and _transfer operations.
-    function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override {
-      super._beforeTokenTransfer(from, to, amount);
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 amount
+    ) internal virtual override {
+        super._beforeTokenTransfer(from, to, amount);
 
-      if (from == address(0)) {
-        // mint
-        _updateAccountSnapshot(to);
-        _updateTotalSupplySnapshot();
-      } else if (to == address(0)) {
-        // burn
-        _updateAccountSnapshot(from);
-        _updateTotalSupplySnapshot();
-      } else {
-        // transfer
-        _updateAccountSnapshot(from);
-        _updateAccountSnapshot(to);
-      }
+        if (from == address(0)) {
+            // mint
+            _updateAccountSnapshot(to);
+            _updateTotalSupplySnapshot();
+        } else if (to == address(0)) {
+            // burn
+            _updateAccountSnapshot(from);
+            _updateTotalSupplySnapshot();
+        } else {
+            // transfer
+            _updateAccountSnapshot(from);
+            _updateAccountSnapshot(to);
+        }
     }
 
     function _valueAt(uint256 snapshotId, Snapshots storage snapshots)
-        private view returns (bool, uint256)
+        private
+        view
+        returns (bool, uint256)
     {
         require(snapshotId > 0, "ERC20Snapshot: id is 0");
         // solhint-disable-next-line max-line-length
-        require(snapshotId <= _currentSnapshotId.current(), "ERC20Snapshot: nonexistent id");
+        require(
+            snapshotId <= _currentSnapshotId.current(),
+            "ERC20Snapshot: nonexistent id"
+        );
 
         // When a valid snapshot is queried, there are three possibilities:
         //  a) The queried value was not modified after the snapshot was taken. Therefore, a snapshot entry was never
@@ -171,7 +185,9 @@ abstract contract ERC20SnapshotUpgradeable is Initializable, ERC20Upgradeable {
         _updateSnapshot(_totalSupplySnapshots, totalSupply());
     }
 
-    function _updateSnapshot(Snapshots storage snapshots, uint256 currentValue) private {
+    function _updateSnapshot(Snapshots storage snapshots, uint256 currentValue)
+        private
+    {
         uint256 currentId = _currentSnapshotId.current();
         if (_lastSnapshotId(snapshots.ids) < currentId) {
             snapshots.ids.push(currentId);
@@ -179,12 +195,17 @@ abstract contract ERC20SnapshotUpgradeable is Initializable, ERC20Upgradeable {
         }
     }
 
-    function _lastSnapshotId(uint256[] storage ids) private view returns (uint256) {
+    function _lastSnapshotId(uint256[] storage ids)
+        private
+        view
+        returns (uint256)
+    {
         if (ids.length == 0) {
             return 0;
         } else {
             return ids[ids.length - 1];
         }
     }
+
     uint256[46] private __gap;
 }

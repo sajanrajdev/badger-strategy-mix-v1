@@ -6,19 +6,19 @@ import "../../math/SafeMath.sol";
 import "../../access/Ownable.sol";
 import "../../utils/Address.sol";
 
- /**
-  * @title Escrow
-  * @dev Base escrow contract, holds funds designated for a payee until they
-  * withdraw them.
-  *
-  * Intended usage: This contract (and derived escrow contracts) should be a
-  * standalone contract, that only interacts with the contract that instantiated
-  * it. That way, it is guaranteed that all Ether will be handled according to
-  * the `Escrow` rules, and there is no need to check for payable functions or
-  * transfers in the inheritance tree. The contract that uses the escrow as its
-  * payment method should be its owner, and provide public methods redirecting
-  * to the escrow's deposit and withdraw.
-  */
+/**
+ * @title Escrow
+ * @dev Base escrow contract, holds funds designated for a payee until they
+ * withdraw them.
+ *
+ * Intended usage: This contract (and derived escrow contracts) should be a
+ * standalone contract, that only interacts with the contract that instantiated
+ * it. That way, it is guaranteed that all Ether will be handled according to
+ * the `Escrow` rules, and there is no need to check for payable functions or
+ * transfers in the inheritance tree. The contract that uses the escrow as its
+ * payment method should be its owner, and provide public methods redirecting
+ * to the escrow's deposit and withdraw.
+ */
 contract Escrow is Ownable {
     using SafeMath for uint256;
     using Address for address payable;
@@ -36,7 +36,7 @@ contract Escrow is Ownable {
      * @dev Stores the sent amount as credit to be withdrawn.
      * @param payee The destination address of the funds.
      */
-    function deposit(address payee) public virtual payable onlyOwner {
+    function deposit(address payee) public payable virtual onlyOwner {
         uint256 amount = msg.value;
         _deposits[payee] = _deposits[payee].add(amount);
 

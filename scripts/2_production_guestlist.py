@@ -9,9 +9,7 @@ from brownie import (
     SettV3,
 )
 
-from config import (
-  REGISTRY
-)
+from config import REGISTRY
 
 from helpers.constants import AddressZero
 
@@ -22,8 +20,10 @@ console = Console()
 
 sleep_between_tx = 1
 
+
 def main():
     """
+    FOR PRODUCTION
     Deploys a guestlist contract, sets its parameters and assigns it to an specific vault.
     Additionally, the script transfers the guestlist's ownership to the Badger Governance.
     IMPORTANT: Must input the desired vault address to add the guestlist to as well as the
@@ -35,8 +35,8 @@ def main():
     merkleRoot = "0x1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a"
     userCap = 2e18
     totalCap = 50e18
-    
-    # Get deployer account from local keystore. Deployer must be the 
+
+    # Get deployer account from local keystore. Deployer must be the
     # vault's governance address in order to set its guestlist parameters.
     dev = connect_account()
 
@@ -71,23 +71,20 @@ def main():
     vault.setGuestList(guestlist.address, {"from": dev})
 
 
-
 def deploy_guestlist(dev, proxyAdmin, vaultAddr):
 
     guestlist_logic = VipCappedGuestListWrapperUpgradeable.at(
         "0x90A768B0bFF5e4e64f220832fc34f727CCE44d64"
-    ) # Guestlist Logic
+    )  # Guestlist Logic
 
     # Initializing arguments
-    args = [
-        vaultAddr
-    ]
+    args = [vaultAddr]
 
     guestlist_proxy = AdminUpgradeabilityProxy.deploy(
-        guestlist_logic, 
-        proxyAdmin, 
-        guestlist_logic.initialize.encode_input(*args), 
-        {'from': dev}
+        guestlist_logic,
+        proxyAdmin,
+        guestlist_logic.initialize.encode_input(*args),
+        {"from": dev},
     )
     time.sleep(sleep_between_tx)
 
@@ -95,12 +92,9 @@ def deploy_guestlist(dev, proxyAdmin, vaultAddr):
     AdminUpgradeabilityProxy.remove(guestlist_proxy)
     guestlist_proxy = VipCappedGuestListWrapperUpgradeable.at(guestlist_proxy.address)
 
-    console.print(
-        "[green]Guestlist was deployed at: [/green]", guestlist_proxy.address
-    )
+    console.print("[green]Guestlist was deployed at: [/green]", guestlist_proxy.address)
 
     return guestlist_proxy
-    
 
 
 def connect_account():

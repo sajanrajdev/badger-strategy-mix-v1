@@ -38,13 +38,21 @@ interface IRelayHubUpgradeable {
      *
      * Emits a {RelayAdded} event.
      */
-    function registerRelay(uint256 transactionFee, string calldata url) external;
+    function registerRelay(uint256 transactionFee, string calldata url)
+        external;
 
     /**
      * @dev Emitted when a relay is registered or re-registered. Looking at these events (and filtering out
      * {RelayRemoved} events) lets a client discover the list of available relays.
      */
-    event RelayAdded(address indexed relay, address indexed owner, uint256 transactionFee, uint256 stake, uint256 unstakeDelay, string url);
+    event RelayAdded(
+        address indexed relay,
+        address indexed owner,
+        uint256 transactionFee,
+        uint256 stake,
+        uint256 unstakeDelay,
+        string url
+    );
 
     /**
      * @dev Removes (deregisters) a relay. Unregistered (but staked for) relays can also be removed.
@@ -79,14 +87,23 @@ interface IRelayHubUpgradeable {
         Unknown, // The relay is unknown to the system: it has never been staked for
         Staked, // The relay has been staked for, but it is not yet active
         Registered, // The relay has registered itself, and is active (can relay calls)
-        Removed    // The relay has been removed by its owner and can no longer relay calls. It must wait for its unstakeDelay to elapse before it can unstake
+        Removed // The relay has been removed by its owner and can no longer relay calls. It must wait for its unstakeDelay to elapse before it can unstake
     }
 
     /**
      * @dev Returns a relay's status. Note that relays can be deleted when unstaked or penalized, causing this function
      * to return an empty entry.
      */
-    function getRelay(address relay) external view returns (uint256 totalStake, uint256 unstakeDelay, uint256 unstakeTime, address payable owner, RelayState state);
+    function getRelay(address relay)
+        external
+        view
+        returns (
+            uint256 totalStake,
+            uint256 unstakeDelay,
+            uint256 unstakeTime,
+            address payable owner,
+            RelayState state
+        );
 
     // Balance management
 
@@ -102,7 +119,11 @@ interface IRelayHubUpgradeable {
     /**
      * @dev Emitted when {depositFor} is called, including the amount and account that was funded.
      */
-    event Deposited(address indexed recipient, address indexed from, uint256 amount);
+    event Deposited(
+        address indexed recipient,
+        address indexed from,
+        uint256 amount
+    );
 
     /**
      * @dev Returns an account's deposits. These can be either a contract's funds, or a relay owner's revenue.
@@ -120,7 +141,11 @@ interface IRelayHubUpgradeable {
     /**
      * @dev Emitted when an account withdraws funds from `RelayHub`.
      */
-    event Withdrawn(address indexed account, address indexed dest, uint256 amount);
+    event Withdrawn(
+        address indexed account,
+        address indexed dest,
+        uint256 amount
+    );
 
     // Relaying
 
@@ -149,11 +174,11 @@ interface IRelayHubUpgradeable {
 
     // Preconditions for relaying, checked by canRelay and returned as the corresponding numeric values.
     enum PreconditionCheck {
-        OK,                         // All checks passed, the call can be relayed
-        WrongSignature,             // The transaction to relay is not signed by requested sender
-        WrongNonce,                 // The provided nonce has already been used by the sender
-        AcceptRelayedCallReverted,  // The recipient rejected this call via acceptRelayedCall
-        InvalidRecipientStatusCode  // The recipient returned an invalid (reserved) status code
+        OK, // All checks passed, the call can be relayed
+        WrongSignature, // The transaction to relay is not signed by requested sender
+        WrongNonce, // The provided nonce has already been used by the sender
+        AcceptRelayedCallReverted, // The recipient rejected this call via acceptRelayedCall
+        InvalidRecipientStatusCode // The recipient returned an invalid (reserved) status code
     }
 
     /**
@@ -206,7 +231,13 @@ interface IRelayHubUpgradeable {
      * The `reason` parameter contains an error code: values 1-10 correspond to `PreconditionCheck` entries, and values
      * over 10 are custom recipient error codes returned from {acceptRelayedCall}.
      */
-    event CanRelayFailed(address indexed relay, address indexed from, address indexed to, bytes4 selector, uint256 reason);
+    event CanRelayFailed(
+        address indexed relay,
+        address indexed from,
+        address indexed to,
+        bytes4 selector,
+        uint256 reason
+    );
 
     /**
      * @dev Emitted when a transaction is relayed.
@@ -216,30 +247,44 @@ interface IRelayHubUpgradeable {
      *
      * `charge` is the Ether value deducted from the recipient's balance, paid to the relay's owner.
      */
-    event TransactionRelayed(address indexed relay, address indexed from, address indexed to, bytes4 selector, RelayCallStatus status, uint256 charge);
+    event TransactionRelayed(
+        address indexed relay,
+        address indexed from,
+        address indexed to,
+        bytes4 selector,
+        RelayCallStatus status,
+        uint256 charge
+    );
 
     // Reason error codes for the TransactionRelayed event
     enum RelayCallStatus {
-        OK,                      // The transaction was successfully relayed and execution successful - never included in the event
-        RelayedCallFailed,       // The transaction was relayed, but the relayed call failed
-        PreRelayedFailed,        // The transaction was not relayed due to preRelatedCall reverting
-        PostRelayedFailed,       // The transaction was relayed and reverted due to postRelatedCall reverting
-        RecipientBalanceChanged  // The transaction was relayed and reverted due to the recipient's balance changing
+        OK, // The transaction was successfully relayed and execution successful - never included in the event
+        RelayedCallFailed, // The transaction was relayed, but the relayed call failed
+        PreRelayedFailed, // The transaction was not relayed due to preRelatedCall reverting
+        PostRelayedFailed, // The transaction was relayed and reverted due to postRelatedCall reverting
+        RecipientBalanceChanged // The transaction was relayed and reverted due to the recipient's balance changing
     }
 
     /**
      * @dev Returns how much gas should be forwarded to a call to {relayCall}, in order to relay a transaction that will
      * spend up to `relayedCallStipend` gas.
      */
-    function requiredGas(uint256 relayedCallStipend) external view returns (uint256);
+    function requiredGas(uint256 relayedCallStipend)
+        external
+        view
+        returns (uint256);
 
     /**
      * @dev Returns the maximum recipient charge, given the amount of gas forwarded, gas price and relay fee.
      */
-    function maxPossibleCharge(uint256 relayedCallStipend, uint256 gasPrice, uint256 transactionFee) external view returns (uint256);
+    function maxPossibleCharge(
+        uint256 relayedCallStipend,
+        uint256 gasPrice,
+        uint256 transactionFee
+    ) external view returns (uint256);
 
-     // Relay penalization.
-     // Any account can penalize relays, removing them from the system immediately, and rewarding the
+    // Relay penalization.
+    // Any account can penalize relays, removing them from the system immediately, and rewarding the
     // reporter with half of the relay's stake. The other half is burned so that, even if the relay penalizes itself, it
     // still loses half of its stake.
 
@@ -249,12 +294,20 @@ interface IRelayHubUpgradeable {
      *
      * The (unsigned) transaction data and signature for both transactions must be provided.
      */
-    function penalizeRepeatedNonce(bytes calldata unsignedTx1, bytes calldata signature1, bytes calldata unsignedTx2, bytes calldata signature2) external;
+    function penalizeRepeatedNonce(
+        bytes calldata unsignedTx1,
+        bytes calldata signature1,
+        bytes calldata unsignedTx2,
+        bytes calldata signature2
+    ) external;
 
     /**
      * @dev Penalize a relay that sent a transaction that didn't target ``RelayHub``'s {registerRelay} or {relayCall}.
      */
-    function penalizeIllegalTransaction(bytes calldata unsignedTx, bytes calldata signature) external;
+    function penalizeIllegalTransaction(
+        bytes calldata unsignedTx,
+        bytes calldata signature
+    ) external;
 
     /**
      * @dev Emitted when a relay is penalized.
@@ -266,4 +319,3 @@ interface IRelayHubUpgradeable {
      */
     function getNonce(address from) external view returns (uint256);
 }
-

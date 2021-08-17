@@ -11,10 +11,7 @@ import "../deps/@openzeppelin/contracts-upgradeable/token/ERC20/SafeERC20Upgrade
 
 import "../interfaces/badger/IController.sol";
 
-
-import {
-    BaseStrategy
-} from "../deps/BaseStrategy.sol";
+import {BaseStrategy} from "../deps/BaseStrategy.sol";
 
 contract MyStrategy is BaseStrategy {
     using SafeERC20Upgradeable for IERC20Upgradeable;
@@ -26,7 +23,12 @@ contract MyStrategy is BaseStrategy {
     address public reward; // Token we farm and swap to want / lpComponent
 
     // Used to signal to the Badger Tree that rewards where sent to it
-    event TreeDistribution(address indexed token, uint256 amount, uint256 indexed blockNumber, uint256 timestamp);
+    event TreeDistribution(
+        address indexed token,
+        uint256 amount,
+        uint256 indexed blockNumber,
+        uint256 timestamp
+    );
 
     function initialize(
         address _governance,
@@ -37,7 +39,13 @@ contract MyStrategy is BaseStrategy {
         address[3] memory _wantConfig,
         uint256[3] memory _feeConfig
     ) public initializer {
-        __BaseStrategy_init(_governance, _strategist, _controller, _keeper, _guardian);
+        __BaseStrategy_init(
+            _governance,
+            _strategist,
+            _controller,
+            _keeper,
+            _guardian
+        );
 
         /// @dev Add config here
         want = _wantConfig[0];
@@ -55,7 +63,7 @@ contract MyStrategy is BaseStrategy {
     /// ===== View Functions =====
 
     // @dev Specify the name of the strategy
-    function getName() external override pure returns (string memory) {
+    function getName() external pure override returns (string memory) {
         return "StrategyName";
     }
 
@@ -65,17 +73,22 @@ contract MyStrategy is BaseStrategy {
     }
 
     /// @dev Balance of want currently held in strategy positions
-    function balanceOfPool() public override view returns (uint256) {
+    function balanceOfPool() public view override returns (uint256) {
         return 0;
     }
-    
+
     /// @dev Returns true if this strategy requires tending
-    function isTendable() public override view returns (bool) {
+    function isTendable() public view override returns (bool) {
         return true;
     }
 
     // @dev These are the tokens that cannot be moved except by the vault
-    function getProtectedTokens() public override view returns (address[] memory) {
+    function getProtectedTokens()
+        public
+        view
+        override
+        returns (address[] memory)
+    {
         address[] memory protectedTokens = new address[](3);
         protectedTokens[0] = want;
         protectedTokens[1] = lpComponent;
@@ -95,24 +108,28 @@ contract MyStrategy is BaseStrategy {
     function _onlyNotProtectedTokens(address _asset) internal override {
         address[] memory protectedTokens = getProtectedTokens();
 
-        for(uint256 x = 0; x < protectedTokens.length; x++){
-            require(address(protectedTokens[x]) != _asset, "Asset is protected");
+        for (uint256 x = 0; x < protectedTokens.length; x++) {
+            require(
+                address(protectedTokens[x]) != _asset,
+                "Asset is protected"
+            );
         }
     }
-
 
     /// @dev invest the amount of want
     /// @notice When this function is called, the controller has already sent want to this
     /// @notice Just get the current balance and then invest accordingly
-    function _deposit(uint256 _amount) internal override {
-    }
+    function _deposit(uint256 _amount) internal override {}
 
     /// @dev utility function to withdraw everything for migration
-    function _withdrawAll() internal override {
-    }
-    /// @dev withdraw the specified amount of want, liquidate from lpComponent to want, paying off any necessary debt for the conversion
-    function _withdrawSome(uint256 _amount) internal override returns (uint256) {
+    function _withdrawAll() internal override {}
 
+    /// @dev withdraw the specified amount of want, liquidate from lpComponent to want, paying off any necessary debt for the conversion
+    function _withdrawSome(uint256 _amount)
+        internal
+        override
+        returns (uint256)
+    {
         return _amount;
     }
 
@@ -120,19 +137,19 @@ contract MyStrategy is BaseStrategy {
     function harvest() external whenNotPaused returns (uint256 harvested) {
         _onlyAuthorizedActors();
 
-
         uint256 _before = IERC20Upgradeable(want).balanceOf(address(this));
 
-        // Write your code here 
+        // Write your code here
 
-
-        uint256 earned = IERC20Upgradeable(want).balanceOf(address(this)).sub(_before);
+        uint256 earned =
+            IERC20Upgradeable(want).balanceOf(address(this)).sub(_before);
 
         /// @notice Keep this in so you get paid!
-        (uint256 governancePerformanceFee, uint256 strategistPerformanceFee) = _processPerformanceFees(earned);
+        (uint256 governancePerformanceFee, uint256 strategistPerformanceFee) =
+            _processPerformanceFees(earned);
 
         // TODO: If you are harvesting a reward token you're not compounding
-        // You probably still want to capture fees for it 
+        // You probably still want to capture fees for it
         // // Process Sushi rewards if existing
         // if (sushiAmount > 0) {
         //     // Process fees on Sushi Rewards
@@ -143,7 +160,7 @@ contract MyStrategy is BaseStrategy {
         //     // NOTE: Send reward to badgerTree
         //     uint256 sushiBalance = IERC20Upgradeable(SUSHI_TOKEN).balanceOf(address(this));
         //     IERC20Upgradeable(SUSHI_TOKEN).safeTransfer(badgerTree, sushiBalance);
-        //     
+        //
         //     // NOTE: Signal the amount of reward sent to the badger tree
         //     emit TreeDistribution(SUSHI_TOKEN, sushiBalance, block.number, block.timestamp);
         // }
@@ -156,29 +173,59 @@ contract MyStrategy is BaseStrategy {
     }
 
     // Alternative Harvest with Price received from harvester, used to avoid exessive front-running
-    function harvest(uint256 price) external whenNotPaused returns (uint256 harvested) {
-
-    }
+    function harvest(uint256 price)
+        external
+        whenNotPaused
+        returns (uint256 harvested)
+    {}
 
     /// @dev Rebalance, Compound or Pay off debt here
     function tend() external whenNotPaused {
         _onlyAuthorizedActors();
     }
 
-
     /// ===== Internal Helper Functions =====
-    
-    /// @dev used to manage the governance and strategist fee, make sure to use it to get paid!
-    function _processPerformanceFees(uint256 _amount) internal returns (uint256 governancePerformanceFee, uint256 strategistPerformanceFee) {
-        governancePerformanceFee = _processFee(want, _amount, performanceFeeGovernance, IController(controller).rewards());
 
-        strategistPerformanceFee = _processFee(want, _amount, performanceFeeStrategist, strategist);
+    /// @dev used to manage the governance and strategist fee, make sure to use it to get paid!
+    function _processPerformanceFees(uint256 _amount)
+        internal
+        returns (
+            uint256 governancePerformanceFee,
+            uint256 strategistPerformanceFee
+        )
+    {
+        governancePerformanceFee = _processFee(
+            want,
+            _amount,
+            performanceFeeGovernance,
+            IController(controller).rewards()
+        );
+
+        strategistPerformanceFee = _processFee(
+            want,
+            _amount,
+            performanceFeeStrategist,
+            strategist
+        );
     }
 
     /// @dev used to manage the governance and strategist fee on earned rewards, make sure to use it to get paid!
-    function _processRewardsFees(uint256 _amount, address _token) internal returns (uint256 governanceRewardsFee, uint256 strategistRewardsFee) {
-        governanceRewardsFee = _processFee(_token, _amount, performanceFeeGovernance, IController(controller).rewards());
+    function _processRewardsFees(uint256 _amount, address _token)
+        internal
+        returns (uint256 governanceRewardsFee, uint256 strategistRewardsFee)
+    {
+        governanceRewardsFee = _processFee(
+            _token,
+            _amount,
+            performanceFeeGovernance,
+            IController(controller).rewards()
+        );
 
-        strategistRewardsFee = _processFee(_token, _amount, performanceFeeStrategist, strategist);
+        strategistRewardsFee = _processFee(
+            _token,
+            _amount,
+            performanceFeeStrategist,
+            strategist
+        );
     }
 }

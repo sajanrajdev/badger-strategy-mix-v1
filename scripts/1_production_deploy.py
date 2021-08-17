@@ -3,19 +3,14 @@ import time
 from brownie import (
     accounts,
     network,
-    MyStrategy, 
-    SettV3, 
+    MyStrategy,
+    SettV3,
     AdminUpgradeabilityProxy,
     Controller,
     BadgerRegistry,
 )
 
-from config import (
-  WANT,
-  PROTECTED_TOKENS,
-  FEES,
-  REGISTRY
-)
+from config import WANT, PROTECTED_TOKENS, FEES, REGISTRY
 
 from helpers.constants import AddressZero
 
@@ -26,14 +21,16 @@ console = Console()
 
 sleep_between_tx = 1
 
+
 def main():
     """
-    Deploys a Controller, a SettV3 and your strategy under upgradable proxies and wires them up. 
-    Note that it sets your deployer account as the governance for the three contracts so that 
-    the setup and production tests are simpler and more efficient. The rest of the permissioned actors 
+    FOR STRATEGISTS AND GOVERNANCE
+    Deploys a Controller, a SettV3 and your strategy under upgradable proxies and wires them up.
+    Note that it sets your deployer account as the governance for the three contracts so that
+    the setup and production tests are simpler and more efficient. The rest of the permissioned actors
     are set based on the latest entries from the Badger Registry.
     """
-    
+
     # Get deployer account from local keystore
     dev = connect_account()
 
@@ -49,43 +46,40 @@ def main():
     assert guardian != AddressZero
     assert keeper != AddressZero
     assert proxyAdmin != AddressZero
-    
 
     # Deploy controller
     controller = deploy_controller(dev, proxyAdmin)
 
     # Deploy Vault
     vault = deploy_vault(
-        controller.address, 
-        dev.address, # Deployer will be set as governance for testing stage 
-        keeper, 
+        controller.address,
+        dev.address,  # Deployer will be set as governance for testing stage
+        keeper,
         guardian,
         dev,
-        proxyAdmin
+        proxyAdmin,
     )
 
     # Deploy Strategy
     strategy = deploy_strategy(
-        controller.address, 
-        dev.address, # Deployer will be set as governance for testing stage
-        strategist, 
-        keeper, 
+        controller.address,
+        dev.address,  # Deployer will be set as governance for testing stage
+        strategist,
+        keeper,
         guardian,
         dev,
-        proxyAdmin
+        proxyAdmin,
     )
 
     # Wire up vault and strategy to test controller
-    wire_up_test_controller(
-        controller,
-        vault,
-        strategy,
-        dev
-    )
+    wire_up_test_controller(controller, vault, strategy, dev)
+
 
 def deploy_controller(dev, proxyAdmin):
 
-    controller_logic = Controller.at("0x01d10fdc6b484BE380144dF12EB6C75387EfC49B") # Controller Logic
+    controller_logic = Controller.at(
+        "0x01d10fdc6b484BE380144dF12EB6C75387EfC49B"
+    )  # Controller Logic
 
     # Deployer address will be used for all actors as controller will only be used for testing
     args = [
@@ -96,10 +90,10 @@ def deploy_controller(dev, proxyAdmin):
     ]
 
     controller_proxy = AdminUpgradeabilityProxy.deploy(
-        controller_logic, 
-        proxyAdmin, 
-        controller_logic.initialize.encode_input(*args), 
-        {'from': dev}
+        controller_logic,
+        proxyAdmin,
+        controller_logic.initialize.encode_input(*args),
+        {"from": dev},
     )
     time.sleep(sleep_between_tx)
 
@@ -112,16 +106,9 @@ def deploy_controller(dev, proxyAdmin):
     )
 
     return controller_proxy
-    
 
-def deploy_vault(
-    controller, 
-    governance, 
-    keeper, 
-    guardian, 
-    dev,
-    proxyAdmin
-):
+
+def deploy_vault(controller, governance, keeper, guardian, dev, proxyAdmin):
 
     args = [
         WANT,
@@ -130,19 +117,21 @@ def deploy_vault(
         keeper,
         guardian,
         False,
-        '',
-        '',
+        "",
+        "",
     ]
 
     print("Vault Arguments: ", args)
 
-    vault_logic = SettV3.at("0xAF0B504BD20626d1fd57F8903898168FCE7ecbc8") # SettV3 Logic
+    vault_logic = SettV3.at(
+        "0xAF0B504BD20626d1fd57F8903898168FCE7ecbc8"
+    )  # SettV3 Logic
 
     vault_proxy = AdminUpgradeabilityProxy.deploy(
-        vault_logic, 
-        proxyAdmin, 
-        vault_logic.initialize.encode_input(*args), 
-        {'from': dev}
+        vault_logic,
+        proxyAdmin,
+        vault_logic.initialize.encode_input(*args),
+        {"from": dev},
     )
     time.sleep(sleep_between_tx)
 
@@ -150,9 +139,7 @@ def deploy_vault(
     AdminUpgradeabilityProxy.remove(vault_proxy)
     vault_proxy = SettV3.at(vault_proxy.address)
 
-    console.print(
-        "[green]Vault was deployed at: [/green]", vault_proxy.address
-    )
+    console.print("[green]Vault was deployed at: [/green]", vault_proxy.address)
 
     assert vault_proxy.paused()
 
@@ -164,13 +151,7 @@ def deploy_vault(
 
 
 def deploy_strategy(
-    controller, 
-    governance, 
-    strategist, 
-    keeper, 
-    guardian, 
-    dev,
-    proxyAdmin
+    controller, governance, strategist, keeper, guardian, dev, proxyAdmin
 ):
 
     args = [
@@ -189,10 +170,10 @@ def deploy_strategy(
     time.sleep(sleep_between_tx)
 
     strat_proxy = AdminUpgradeabilityProxy.deploy(
-        strat_logic, 
-        proxyAdmin, 
-        strat_logic.initialize.encode_input(*args), 
-        {'from': dev}
+        strat_logic,
+        proxyAdmin,
+        strat_logic.initialize.encode_input(*args),
+        {"from": dev},
     )
     time.sleep(sleep_between_tx)
 
@@ -200,19 +181,12 @@ def deploy_strategy(
     AdminUpgradeabilityProxy.remove(strat_proxy)
     strat_proxy = MyStrategy.at(strat_proxy.address)
 
-    console.print(
-        "[green]Strategy was deployed at: [/green]", strat_proxy.address
-    )
+    console.print("[green]Strategy was deployed at: [/green]", strat_proxy.address)
 
     return strat_proxy
 
 
-def wire_up_test_controller(
-    controller,
-    vault,
-    strategy,
-    dev
-):
+def wire_up_test_controller(controller, vault, strategy, dev):
     controller.approveStrategy(WANT, strategy.address, {"from": dev})
     time.sleep(sleep_between_tx)
     assert controller.approvedStrategies(WANT, strategy.address) == True

@@ -3,6 +3,7 @@ pragma solidity >=0.5.0 <0.8.0;
 
 interface IUniswapRouterV2 {
     function factory() external view returns (address);
+
     function addLiquidity(
         address tokenA,
         address tokenB,
@@ -46,9 +47,15 @@ interface IUniswapRouterV2 {
         uint256 deadline
     ) external returns (uint256 amountA, uint256 amountB);
 
-    function getAmountsOut(uint256 amountIn, address[] calldata path) external view returns (uint256[] memory amounts);
+    function getAmountsOut(uint256 amountIn, address[] calldata path)
+        external
+        view
+        returns (uint256[] memory amounts);
 
-    function getAmountsIn(uint256 amountOut, address[] calldata path) external view returns (uint256[] memory amounts);
+    function getAmountsIn(uint256 amountOut, address[] calldata path)
+        external
+        view
+        returns (uint256[] memory amounts);
 
     function swapETHForExactTokens(
         uint256 amountOut,

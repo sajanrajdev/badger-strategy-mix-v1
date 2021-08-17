@@ -16,15 +16,16 @@ contract GSNRecipientSignature is GSNRecipient {
 
     address private _trustedSigner;
 
-    enum GSNRecipientSignatureErrorCodes {
-        INVALID_SIGNER
-    }
+    enum GSNRecipientSignatureErrorCodes {INVALID_SIGNER}
 
     /**
      * @dev Sets the trusted signer that is going to be producing signatures to approve relayed calls.
      */
     constructor(address trustedSigner) public {
-        require(trustedSigner != address(0), "GSNRecipientSignature: trusted signer is the zero address");
+        require(
+            trustedSigner != address(0),
+            "GSNRecipientSignature: trusted signer is the zero address"
+        );
         _trustedSigner = trustedSigner;
     }
 
@@ -41,32 +42,43 @@ contract GSNRecipientSignature is GSNRecipient {
         uint256 nonce,
         bytes memory approvalData,
         uint256
-    )
-        public
-        view
-        virtual
-        override
-        returns (uint256, bytes memory)
-    {
-        bytes memory blob = abi.encodePacked(
-            relay,
-            from,
-            encodedFunction,
-            transactionFee,
-            gasPrice,
-            gasLimit,
-            nonce, // Prevents replays on RelayHub
-            getHubAddr(), // Prevents replays in multiple RelayHubs
-            address(this) // Prevents replays in multiple recipients
-        );
-        if (keccak256(blob).toEthSignedMessageHash().recover(approvalData) == _trustedSigner) {
+    ) public view virtual override returns (uint256, bytes memory) {
+        bytes memory blob =
+            abi.encodePacked(
+                relay,
+                from,
+                encodedFunction,
+                transactionFee,
+                gasPrice,
+                gasLimit,
+                nonce, // Prevents replays on RelayHub
+                getHubAddr(), // Prevents replays in multiple RelayHubs
+                address(this) // Prevents replays in multiple recipients
+            );
+        if (
+            keccak256(blob).toEthSignedMessageHash().recover(approvalData) ==
+            _trustedSigner
+        ) {
             return _approveRelayedCall();
         } else {
-            return _rejectRelayedCall(uint256(GSNRecipientSignatureErrorCodes.INVALID_SIGNER));
+            return
+                _rejectRelayedCall(
+                    uint256(GSNRecipientSignatureErrorCodes.INVALID_SIGNER)
+                );
         }
     }
 
-    function _preRelayedCall(bytes memory) internal virtual override returns (bytes32) { }
+    function _preRelayedCall(bytes memory)
+        internal
+        virtual
+        override
+        returns (bytes32)
+    {}
 
-    function _postRelayedCall(bytes memory, bool, uint256, bytes32) internal virtual override { }
+    function _postRelayedCall(
+        bytes memory,
+        bool,
+        uint256,
+        bytes32
+    ) internal virtual override {}
 }

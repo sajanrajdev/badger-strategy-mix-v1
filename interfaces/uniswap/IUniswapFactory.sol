@@ -15,23 +15,33 @@ interface IUniswapFactory {
         returns (address pair);
 
     function allPairs(uint256) external view returns (address pair);
+
     function allPairsLength() external view returns (uint256);
+
     function feeTo() external view returns (address);
+
     function feeToSetter() external view returns (address);
+
     function createPair(address tokenA, address tokenB)
         external
         returns (address pair);
 
     // Create Exchange
     function createExchange(address token) external returns (address exchange);
+
     // Get Exchange and Token Info
-    function getExchange(address token) external view returns (address exchange);
+    function getExchange(address token)
+        external
+        view
+        returns (address exchange);
+
     function getToken(address exchange) external view returns (address token);
-    function getTokenWithId(uint256 tokenId) external view returns (address token);
+
+    function getTokenWithId(uint256 tokenId)
+        external
+        view
+        returns (address token);
+
     // Never use
     function initializeFactory(address template) external;
 }
-
-    
-
-    

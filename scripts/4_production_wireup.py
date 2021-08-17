@@ -10,9 +10,7 @@ from brownie import (
 import click
 from rich.console import Console
 
-from config import (
-  REGISTRY
-)
+from config import REGISTRY
 
 from helpers.constants import AddressZero
 
@@ -20,9 +18,12 @@ console = Console()
 
 sleep_between_tx = 1
 
+
 def main():
     """
-    Sets a strategy and vault within the production controller based on a given want. 
+    GOVERNANCE ONLY
+    Connects the Strategies to the Vaults via the Production Controller
+
     This script is enabled to handle multiple sets of strategy + vault + want. It must be
     called from the controller's governance account.
     """
@@ -31,14 +32,14 @@ def main():
     dev = connect_account()
 
     # NOTE: Add the strategies, vaults and their corresponding wants
-    # to the arrays below. It is very important that indexes are the 
-    # same for corresponding contracts. Example: to wire SettA, the  
+    # to the arrays below. It is very important that indexes are the
+    # same for corresponding contracts. Example: to wire SettA, the
     # address of strategyA, vaultA and wantA must all be position at
     # the same index within their respective arrays.
 
     # Strategies to wire up
     strategies = [
-        "0x1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a", 
+        "0x1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a",
     ]
     # Vaults to wire up
     vaults = [

@@ -5,6 +5,20 @@ console = Console()
 
 
 class StrategyResolver(StrategyCoreResolver):
+    def get_strategy_destinations(self):
+        """
+        Track balances for all strategy implementations
+        (Strategy Must Implement)
+        """
+        # E.G
+        # strategy = self.manager.strategy
+        # return {
+        #     "gauge": strategy.gauge(),
+        #     "mintr": strategy.mintr(),
+        # }
+
+        return {}
+
     def hook_after_confirm_withdraw(self, before, after, params):
         """
         Specifies extra check for ordinary operation on withdrawal
@@ -59,17 +73,3 @@ class StrategyResolver(StrategyCoreResolver):
         (Strategy Must Implement)
         """
         assert True
-
-    def get_strategy_destinations(self):
-        """
-        Track balances for all strategy implementations
-        (Strategy Must Implement)
-        """
-        # E.G
-        # strategy = self.manager.strategy
-        # return {
-        #     "gauge": strategy.gauge(),
-        #     "mintr": strategy.mintr(),
-        # }
-
-        return {}

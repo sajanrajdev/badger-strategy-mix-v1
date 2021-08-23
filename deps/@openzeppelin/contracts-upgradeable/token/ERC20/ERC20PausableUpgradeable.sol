@@ -13,15 +13,19 @@ import "../../proxy/Initializable.sol";
  * period, or having an emergency switch for freezing all token transfers in the
  * event of a large bug.
  */
-abstract contract ERC20PausableUpgradeable is Initializable, ERC20Upgradeable, PausableUpgradeable {
+abstract contract ERC20PausableUpgradeable is
+    Initializable,
+    ERC20Upgradeable,
+    PausableUpgradeable
+{
     function __ERC20Pausable_init() internal initializer {
         __Context_init_unchained();
         __Pausable_init_unchained();
         __ERC20Pausable_init_unchained();
     }
 
-    function __ERC20Pausable_init_unchained() internal initializer {
-    }
+    function __ERC20Pausable_init_unchained() internal initializer {}
+
     /**
      * @dev See {ERC20-_beforeTokenTransfer}.
      *
@@ -29,10 +33,15 @@ abstract contract ERC20PausableUpgradeable is Initializable, ERC20Upgradeable, P
      *
      * - the contract must not be paused.
      */
-    function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override {
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 amount
+    ) internal virtual override {
         super._beforeTokenTransfer(from, to, amount);
 
         require(!paused(), "ERC20Pausable: token transfer while paused");
     }
+
     uint256[50] private __gap;
 }

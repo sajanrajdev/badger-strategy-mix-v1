@@ -23,10 +23,21 @@ import "../proxy/Initializable.sol";
  * roles, as well as the default admin role, which will let it grant both minter
  * and pauser roles to other accounts.
  */
-contract ERC20PresetMinterPauserUpgradeable is Initializable, ContextUpgradeable, AccessControlUpgradeable, ERC20BurnableUpgradeable, ERC20PausableUpgradeable {
-    function initialize(string memory name, string memory symbol) public virtual initializer {
+contract ERC20PresetMinterPauserUpgradeable is
+    Initializable,
+    ContextUpgradeable,
+    AccessControlUpgradeable,
+    ERC20BurnableUpgradeable,
+    ERC20PausableUpgradeable
+{
+    function initialize(string memory name, string memory symbol)
+        public
+        virtual
+        initializer
+    {
         __ERC20PresetMinterPauser_init(name, symbol);
     }
+
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
 
@@ -36,7 +47,10 @@ contract ERC20PresetMinterPauserUpgradeable is Initializable, ContextUpgradeable
      *
      * See {ERC20-constructor}.
      */
-    function __ERC20PresetMinterPauser_init(string memory name, string memory symbol) internal initializer {
+    function __ERC20PresetMinterPauser_init(
+        string memory name,
+        string memory symbol
+    ) internal initializer {
         __Context_init_unchained();
         __AccessControl_init_unchained();
         __ERC20_init_unchained(name, symbol);
@@ -46,7 +60,10 @@ contract ERC20PresetMinterPauserUpgradeable is Initializable, ContextUpgradeable
         __ERC20PresetMinterPauser_init_unchained(name, symbol);
     }
 
-    function __ERC20PresetMinterPauser_init_unchained(string memory name, string memory symbol) internal initializer {
+    function __ERC20PresetMinterPauser_init_unchained(
+        string memory name,
+        string memory symbol
+    ) internal initializer {
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
 
         _setupRole(MINTER_ROLE, _msgSender());
@@ -63,7 +80,10 @@ contract ERC20PresetMinterPauserUpgradeable is Initializable, ContextUpgradeable
      * - the caller must have the `MINTER_ROLE`.
      */
     function mint(address to, uint256 amount) public virtual {
-        require(hasRole(MINTER_ROLE, _msgSender()), "ERC20PresetMinterPauser: must have minter role to mint");
+        require(
+            hasRole(MINTER_ROLE, _msgSender()),
+            "ERC20PresetMinterPauser: must have minter role to mint"
+        );
         _mint(to, amount);
     }
 
@@ -77,7 +97,10 @@ contract ERC20PresetMinterPauserUpgradeable is Initializable, ContextUpgradeable
      * - the caller must have the `PAUSER_ROLE`.
      */
     function pause() public virtual {
-        require(hasRole(PAUSER_ROLE, _msgSender()), "ERC20PresetMinterPauser: must have pauser role to pause");
+        require(
+            hasRole(PAUSER_ROLE, _msgSender()),
+            "ERC20PresetMinterPauser: must have pauser role to pause"
+        );
         _pause();
     }
 
@@ -91,12 +114,20 @@ contract ERC20PresetMinterPauserUpgradeable is Initializable, ContextUpgradeable
      * - the caller must have the `PAUSER_ROLE`.
      */
     function unpause() public virtual {
-        require(hasRole(PAUSER_ROLE, _msgSender()), "ERC20PresetMinterPauser: must have pauser role to unpause");
+        require(
+            hasRole(PAUSER_ROLE, _msgSender()),
+            "ERC20PresetMinterPauser: must have pauser role to unpause"
+        );
         _unpause();
     }
 
-    function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override(ERC20Upgradeable, ERC20PausableUpgradeable) {
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 amount
+    ) internal virtual override(ERC20Upgradeable, ERC20PausableUpgradeable) {
         super._beforeTokenTransfer(from, to, amount);
     }
+
     uint256[50] private __gap;
 }

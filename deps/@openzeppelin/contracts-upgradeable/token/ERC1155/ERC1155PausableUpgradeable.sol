@@ -15,7 +15,11 @@ import "../../proxy/Initializable.sol";
  *
  * _Available since v3.1._
  */
-abstract contract ERC1155PausableUpgradeable is Initializable, ERC1155Upgradeable, PausableUpgradeable {
+abstract contract ERC1155PausableUpgradeable is
+    Initializable,
+    ERC1155Upgradeable,
+    PausableUpgradeable
+{
     function __ERC1155Pausable_init() internal initializer {
         __Context_init_unchained();
         __ERC165_init_unchained();
@@ -23,8 +27,8 @@ abstract contract ERC1155PausableUpgradeable is Initializable, ERC1155Upgradeabl
         __ERC1155Pausable_init_unchained();
     }
 
-    function __ERC1155Pausable_init_unchained() internal initializer {
-    }
+    function __ERC1155Pausable_init_unchained() internal initializer {}
+
     /**
      * @dev See {ERC1155-_beforeTokenTransfer}.
      *
@@ -39,12 +43,11 @@ abstract contract ERC1155PausableUpgradeable is Initializable, ERC1155Upgradeabl
         uint256[] memory ids,
         uint256[] memory amounts,
         bytes memory data
-    )
-        internal virtual override
-    {
+    ) internal virtual override {
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
 
         require(!paused(), "ERC1155Pausable: token transfer while paused");
     }
+
     uint256[50] private __gap;
 }

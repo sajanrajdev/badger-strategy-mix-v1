@@ -3,31 +3,46 @@ from rich.console import Console
 
 console = Console()
 
+
 class StrategyResolver(StrategyCoreResolver):
+    def get_strategy_destinations(self):
+        """
+        Track balances for all strategy implementations
+        (Strategy Must Implement)
+        """
+        # E.G
+        # strategy = self.manager.strategy
+        # return {
+        #     "gauge": strategy.gauge(),
+        #     "mintr": strategy.mintr(),
+        # }
+
+        return {}
+
     def hook_after_confirm_withdraw(self, before, after, params):
         """
-            Specifies extra check for ordinary operation on withdrawal
-            Use this to verify that balances in the get_strategy_destinations are properly set
+        Specifies extra check for ordinary operation on withdrawal
+        Use this to verify that balances in the get_strategy_destinations are properly set
         """
         assert False
 
     def hook_after_confirm_deposit(self, before, after, params):
         """
-            Specifies extra check for ordinary operation on deposit
-            Use this to verify that balances in the get_strategy_destinations are properly set
+        Specifies extra check for ordinary operation on deposit
+        Use this to verify that balances in the get_strategy_destinations are properly set
         """
         assert False
 
     def hook_after_earn(self, before, after, params):
         """
-            Specifies extra check for ordinary operation on earn
-            Use this to verify that balances in the get_strategy_destinations are properly set
+        Specifies extra check for ordinary operation on earn
+        Use this to verify that balances in the get_strategy_destinations are properly set
         """
         assert False
 
     def confirm_harvest(self, before, after, tx):
         """
-            Verfies that the Harvest produced yield and fees
+        Verfies that the Harvest produced yield and fees
         """
         console.print("=== Compare Harvest ===")
         self.manager.printCompare(before, after)
@@ -58,17 +73,3 @@ class StrategyResolver(StrategyCoreResolver):
         (Strategy Must Implement)
         """
         assert True
-
-    def get_strategy_destinations(self):
-        """
-        Track balances for all strategy implementations
-        (Strategy Must Implement)
-        """
-        # E.G
-        # strategy = self.manager.strategy
-        # return {
-        #     "gauge": strategy.gauge(),
-        #     "mintr": strategy.mintr(),
-        # }
-
-        return {}

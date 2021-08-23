@@ -37,7 +37,12 @@ contract ERC165Upgradeable is Initializable, IERC165Upgradeable {
      *
      * Time complexity O(1), guaranteed to always use less than 30 000 gas.
      */
-    function supportsInterface(bytes4 interfaceId) public view override returns (bool) {
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override
+        returns (bool)
+    {
         return _supportedInterfaces[interfaceId];
     }
 
@@ -56,5 +61,6 @@ contract ERC165Upgradeable is Initializable, IERC165Upgradeable {
         require(interfaceId != 0xffffffff, "ERC165: invalid interface id");
         _supportedInterfaces[interfaceId] = true;
     }
+
     uint256[49] private __gap;
 }

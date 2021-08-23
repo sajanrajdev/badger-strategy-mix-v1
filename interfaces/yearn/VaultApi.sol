@@ -38,20 +38,27 @@ interface VaultAPI is IERC20 {
 
     function deposit(uint256 amount) external returns (uint256);
 
-    function deposit(uint256 amount, address recipient) external returns (uint256);
+    function deposit(uint256 amount, address recipient)
+        external
+        returns (uint256);
 
     // NOTE: Vyper produces multiple signatures for a given function with "default" args
     function withdraw() external returns (uint256);
 
     function withdraw(uint256 maxShares) external returns (uint256);
 
-    function withdraw(uint256 maxShares, address recipient) external returns (uint256);
+    function withdraw(uint256 maxShares, address recipient)
+        external
+        returns (uint256);
 
     function token() external view returns (address);
 
     function guestList() external view returns (address);
 
-    function strategies(address _strategy) external view returns (StrategyParams memory);
+    function strategies(address _strategy)
+        external
+        view
+        returns (StrategyParams memory);
 
     function pricePerShare() external view returns (uint256);
 

@@ -21,7 +21,7 @@ This mix is configured for use with [Ganache](https://github.com/trufflesuite/ga
 
 1. Use this code by clicking on Use This Template
 
-2. Download the code with ```git clone URL_FROM_GITHUB```
+2. Download the code with `git clone URL_FROM_GITHUB`
 
 3. [Install Brownie](https://eth-brownie.readthedocs.io/en/stable/install.html) & [Ganache-CLI](https://github.com/trufflesuite/ganache-cli), if you haven't already.
 
@@ -32,6 +32,7 @@ This mix is configured for use with [Ganache](https://github.com/trufflesuite/ga
 6. Sign up for [Etherscan](www.etherscan.io) and generate an API key. This is required for fetching source codes of the mainnet contracts we will be interacting with. Store the API key in the `ETHERSCAN_TOKEN` environment variable.
 
 7. Install the dependencies in the package
+
 ```
 ## Javascript dependencies
 npm i
@@ -54,6 +55,7 @@ To deploy the demo Badger Strategy in a development environment:
 ```
 
 2. Run Scripts for Deployment
+
 ```
   brownie run deploy
 ```
@@ -61,6 +63,7 @@ To deploy the demo Badger Strategy in a development environment:
 Deployment will set up a Vault, Controller and deploy your strategy
 
 3. Run the test deployment in the console and interact with it
+
 ```python
   brownie console
   deployed = run("deploy")
@@ -93,16 +96,19 @@ Deployment will set up a Vault, Controller and deploy your strategy
 ## Adding Configuration
 
 To ship a valid strategy, that will be evaluated to deploy on mainnet, with potentially $100M + in TVL, you need to:
+
 1. Add custom config in `/config/__init__.py`
 2. Write the Strategy Code in MyStrategy.sol
 3. Customize the StrategyResolver in `/config/StrategyResolver.py` so that snapshot testing can verify that operations happened correctly
 4. Write any extra test to confirm that the strategy is working properly
 
 ## Add a custom want configuration
+
 Most strategies have a:
-* **want** the token you want to increase the balance of
-* **lpComponent** the token representing how much you deposited in the yield source
-* **reward** the token you are farming, that you'll swap into **want**
+
+- **want** the token you want to increase the balance of
+- **lpComponent** the token representing how much you deposited in the yield source
+- **reward** the token you are farming, that you'll swap into **want**
 
 Set these up in `/config/__init__.py` this mix will automatically be set up for testing and deploying after you do so
 
@@ -110,20 +116,21 @@ Set these up in `/config/__init__.py` this mix will automatically be set up for 
 
 [`contracts/MyStrategy.sol`](contracts/MyStrategy.sol) is where you implement your own logic for your strategy. In particular:
 
-* Customize the `initialize` Method
-* Set a name in `MyStrategy.getName()`
-* Set a version in `MyStrategy.version()`
-* Write a way to calculate the want invested in `MyStrategy.balanceOfPool()`
-* Write a method that returns true if the Strategy should be tended in `MyStrategy.isTendable()`
-* Set a version in `MyStrategy.version()`
-* Invest your want tokens via `Strategy._deposit()`.
-* Take profits and repay debt via `Strategy.harvest()`.
-* Unwind enough of your position to payback withdrawals via `Strategy._withdrawSome()`.
-* Unwind all of your positions via `Strategy._withdrawAll()`.
-* Rebalance the Strategy positions via `Strategy.tend()`.
-* Make a list of all position tokens that should be protected against movements via `Strategy.protectedTokens()`.
+- Customize the `initialize` Method
+- Set a name in `MyStrategy.getName()`
+- Set a version in `MyStrategy.version()`
+- Write a way to calculate the want invested in `MyStrategy.balanceOfPool()`
+- Write a method that returns true if the Strategy should be tended in `MyStrategy.isTendable()`
+- Set a version in `MyStrategy.version()`
+- Invest your want tokens via `Strategy._deposit()`.
+- Take profits and repay debt via `Strategy.harvest()`.
+- Unwind enough of your position to payback withdrawals via `Strategy._withdrawSome()`.
+- Unwind all of your positions via `Strategy._withdrawAll()`.
+- Rebalance the Strategy positions via `Strategy.tend()`.
+- Make a list of all position tokens that should be protected against movements via `Strategy.protectedTokens()`.
 
 ## Specifying checks for ordinary operations in config/StrategyResolver
+
 In order to snapshot certain balances, we use the Snapshot manager.
 This class helps with verifying that ordinary procedures (deposit, withdraw, harvest), happened correctly.
 
@@ -132,12 +139,13 @@ Edit `/config/StrategyResolver.py` to specify and verify how an ordinary harvest
 
 ### StrategyResolver
 
-* Add Contract to check balances for in `get_strategy_destinations` (e.g. deposit pool, gauge, lpTokens)
-* Write `confirm_harvest` to verify that the harvest was profitable
-* Write `confirm_tend` to verify that tending will properly rebalance the strategy
-* Specify custom checks for ordinary deposits, withdrawals and calls to `earn` by setting up `hook_after_confirm_withdraw`, `hook_after_confirm_deposit`, `hook_after_earn`
+- Add Contract to check balances for in `get_strategy_destinations` (e.g. deposit pool, gauge, lpTokens)
+- Write `confirm_harvest` to verify that the harvest was profitable
+- Write `confirm_tend` to verify that tending will properly rebalance the strategy
+- Specify custom checks for ordinary deposits, withdrawals and calls to `earn` by setting up `hook_after_confirm_withdraw`, `hook_after_confirm_deposit`, `hook_after_earn`
 
 ## Add your custom testing
+
 Check the various tests under `/tests`
 The file `/tests/test_custom` is already set up for you to write custom tests there
 See example tests in `/tests/examples`
@@ -151,7 +159,6 @@ To run the tests:
 ```
 brownie test
 ```
-
 
 ## Debugging Failed Transactions
 
@@ -184,20 +191,36 @@ To view a tree map of how the transaction executed:
 
 See the [Brownie documentation](https://eth-brownie.readthedocs.io/en/stable/core-transactions.html) for more detailed information on debugging failed transactions.
 
-
 ## Deployment
 
 When you are finished testing and ready to deploy to the mainnet:
 
 1. [Import a keystore](https://eth-brownie.readthedocs.io/en/stable/account-management.html#importing-from-a-private-key) into Brownie for the account you wish to deploy from.
-2. Run [`scripts/deploy.py`](scripts/deploy.py) with the following command
+2. Run [`scripts/production_deploy.py`](scripts/production_deploy.py) with the following command:
 
 ```bash
-$ brownie run deployment --network mainnet
+$ brownie run scripts/production_deploy.py --network mainnet
 ```
 
-You will be prompted to enter your keystore password, and then the contract will be deployed.
+You will be prompted to enter your desired deployer account and keystore password, and then the contracts will be deployed.
 
+3. This script will deploy a Controller, a SettV3 and your strategy under upgradable proxies. It will also set your deployer account as the governance for the three of them so that you can configure them and control them during testing stage. The script will also set the rest of the permissioned actors based on the latest entries from the Badger Registry.
+
+## Production Parameters Verification
+
+When you are done testing your contracts in production and they are ready for incorporation to the Badger ecosystem, the `production_setup` script can be ran to ensure that all parameters are set in compliance to Badger's production entities and contracts. You can run this script by doing the following:
+
+1. Open the [`scripts/production_setup.py`](scripts/production_setup.py) file and change the addresses for your strategy and vault mainnet addresses on lines 29 and 30.
+2. [Import a keystore](https://eth-brownie.readthedocs.io/en/stable/account-management.html#importing-from-a-private-key) into Brownie for the account currently set as `governance` for your contracts.
+3. Run [`scripts/production_setup.py`](scripts/production_setup.py) with the following command:
+
+```bash
+$ brownie run scripts/production_setup.py --network mainnet
+```
+
+You will be prompted to enter your governance account and keystore password, and then the the parameter verification and setup process will be executed.
+
+4. This script will compare all existing parameters against the latest production parameters stored on the Badger Registry. In case of a mismatch, the script will execute a transaction to change the parameter to the proper one. Notice that, as a final step, the script will change the governance address to Badger's Governance Multisig; this will effectively relinquish the contract control from your account to the Badger Governance. Additionally, the script performs a final check of all parameters against the registry parameters.
 
 ## Known issues
 
@@ -206,6 +229,7 @@ You will be prompted to enter your keystore password, and then the contract will
 If you are using Ganache to fork a network, then you may have issues with the blockchain archive state every 30 minutes. This is due to your node provider (i.e. Infura) only allowing free users access to 30 minutes of archive state. To solve this, upgrade to a paid plan, or simply restart your ganache instance and redploy your contracts.
 
 # Resources
+
 - Example Strategy https://github.com/Badger-Finance/wBTC-AAVE-Rewards-Farm-Badger-V1-Strategy
 - Badger Builders Discord https://discord.gg/Tf2PucrXcE
 - Badger [Discord channel](https://discord.gg/phbqWTCjXU)

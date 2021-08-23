@@ -25,7 +25,7 @@ import "./escrow/Escrow.sol";
 contract PullPayment {
     Escrow private _escrow;
 
-    constructor () internal {
+    constructor() internal {
         _escrow = new Escrow();
     }
 
@@ -64,6 +64,6 @@ contract PullPayment {
      * @param amount The amount to transfer.
      */
     function _asyncTransfer(address dest, uint256 amount) internal virtual {
-        _escrow.deposit{ value: amount }(dest);
+        _escrow.deposit{value: amount}(dest);
     }
 }

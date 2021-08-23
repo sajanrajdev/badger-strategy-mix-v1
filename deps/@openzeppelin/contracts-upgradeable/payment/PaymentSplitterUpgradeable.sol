@@ -40,14 +40,23 @@ contract PaymentSplitterUpgradeable is Initializable, ContextUpgradeable {
      * All addresses in `payees` must be non-zero. Both arrays must have the same non-zero length, and there must be no
      * duplicates in `payees`.
      */
-    function __PaymentSplitter_init(address[] memory payees, uint256[] memory shares) internal initializer {
+    function __PaymentSplitter_init(
+        address[] memory payees,
+        uint256[] memory shares
+    ) internal initializer {
         __Context_init_unchained();
         __PaymentSplitter_init_unchained(payees, shares);
     }
 
-    function __PaymentSplitter_init_unchained(address[] memory payees, uint256[] memory shares) internal initializer {
+    function __PaymentSplitter_init_unchained(
+        address[] memory payees,
+        uint256[] memory shares
+    ) internal initializer {
         // solhint-disable-next-line max-line-length
-        require(payees.length == shares.length, "PaymentSplitter: payees and shares length mismatch");
+        require(
+            payees.length == shares.length,
+            "PaymentSplitter: payees and shares length mismatch"
+        );
         require(payees.length > 0, "PaymentSplitter: no payees");
 
         for (uint256 i = 0; i < payees.length; i++) {
@@ -64,7 +73,7 @@ contract PaymentSplitterUpgradeable is Initializable, ContextUpgradeable {
      * https://solidity.readthedocs.io/en/latest/contracts.html#fallback-function[fallback
      * functions].
      */
-    receive () external payable virtual {
+    receive() external payable {
         emit PaymentReceived(_msgSender(), msg.value);
     }
 
@@ -111,7 +120,10 @@ contract PaymentSplitterUpgradeable is Initializable, ContextUpgradeable {
         require(_shares[account] > 0, "PaymentSplitter: account has no shares");
 
         uint256 totalReceived = address(this).balance.add(_totalReleased);
-        uint256 payment = totalReceived.mul(_shares[account]).div(_totalShares).sub(_released[account]);
+        uint256 payment =
+            totalReceived.mul(_shares[account]).div(_totalShares).sub(
+                _released[account]
+            );
 
         require(payment != 0, "PaymentSplitter: account is not due payment");
 
@@ -128,14 +140,21 @@ contract PaymentSplitterUpgradeable is Initializable, ContextUpgradeable {
      * @param shares_ The number of shares owned by the payee.
      */
     function _addPayee(address account, uint256 shares_) private {
-        require(account != address(0), "PaymentSplitter: account is the zero address");
+        require(
+            account != address(0),
+            "PaymentSplitter: account is the zero address"
+        );
         require(shares_ > 0, "PaymentSplitter: shares are 0");
-        require(_shares[account] == 0, "PaymentSplitter: account already has shares");
+        require(
+            _shares[account] == 0,
+            "PaymentSplitter: account already has shares"
+        );
 
         _payees.push(account);
         _shares[account] = shares_;
         _totalShares = _totalShares.add(shares_);
         emit PayeeAdded(account, shares_);
     }
+
     uint256[45] private __gap;
 }

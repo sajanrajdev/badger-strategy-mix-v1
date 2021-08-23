@@ -5,7 +5,10 @@ interface IAccessControl {
     /**
      * @dev Returns `true` if `account` has been granted `role`.
      */
-    function hasRole(bytes32 role, address account) external view returns (bool);
+    function hasRole(bytes32 role, address account)
+        external
+        view
+        returns (bool);
 
     /**
      * @dev Returns the number of accounts that have `role`. Can be used
@@ -25,7 +28,11 @@ interface IAccessControl {
      * https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post]
      * for more information.
      */
-    function getRoleMember(bytes32 role, uint256 index) external view returns (address);
+    function getRoleMember(bytes32 role, uint256 index)
+        external
+        view
+        returns (address);
+
     /**
      * @dev Returns the admin role that controls `role`. See {grantRole} and
      * {revokeRole}.
@@ -33,6 +40,7 @@ interface IAccessControl {
      * To change a role's admin, use {_setRoleAdmin}.
      */
     function getRoleAdmin(bytes32 role) external view returns (bytes32);
+
     /**
      * @dev Grants `role` to `account`.
      *
@@ -44,6 +52,7 @@ interface IAccessControl {
      * - the caller must have ``role``'s admin role.
      */
     function grantRole(bytes32 role, address account) external;
+
     /**
      * @dev Revokes `role` from `account`.
      *

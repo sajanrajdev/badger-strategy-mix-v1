@@ -18,7 +18,8 @@ interface IStakingRewards {
 
     function exit() external;
 
-    function notifyRewardAmount(uint256 startTimestamp, uint256 reward) external;
+    function notifyRewardAmount(uint256 startTimestamp, uint256 reward)
+        external;
 
     function setRewardsDuration(uint256 _rewardsDuration) external;
 }

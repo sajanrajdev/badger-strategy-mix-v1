@@ -58,7 +58,11 @@ interface IERC777 {
      * - if `recipient` is a contract, it must implement the {IERC777Recipient}
      * interface.
      */
-    function send(address recipient, uint256 amount, bytes calldata data) external;
+    function send(
+        address recipient,
+        uint256 amount,
+        bytes calldata data
+    ) external;
 
     /**
      * @dev Destroys `amount` tokens from the caller's account, reducing the
@@ -82,7 +86,10 @@ interface IERC777 {
      *
      * See {operatorSend} and {operatorBurn}.
      */
-    function isOperatorFor(address operator, address tokenHolder) external view returns (bool);
+    function isOperatorFor(address operator, address tokenHolder)
+        external
+        view
+        returns (bool);
 
     /**
      * @dev Make an account an operator of the caller.
@@ -178,11 +185,29 @@ interface IERC777 {
         bytes operatorData
     );
 
-    event Minted(address indexed operator, address indexed to, uint256 amount, bytes data, bytes operatorData);
+    event Minted(
+        address indexed operator,
+        address indexed to,
+        uint256 amount,
+        bytes data,
+        bytes operatorData
+    );
 
-    event Burned(address indexed operator, address indexed from, uint256 amount, bytes data, bytes operatorData);
+    event Burned(
+        address indexed operator,
+        address indexed from,
+        uint256 amount,
+        bytes data,
+        bytes operatorData
+    );
 
-    event AuthorizedOperator(address indexed operator, address indexed tokenHolder);
+    event AuthorizedOperator(
+        address indexed operator,
+        address indexed tokenHolder
+    );
 
-    event RevokedOperator(address indexed operator, address indexed tokenHolder);
+    event RevokedOperator(
+        address indexed operator,
+        address indexed tokenHolder
+    );
 }

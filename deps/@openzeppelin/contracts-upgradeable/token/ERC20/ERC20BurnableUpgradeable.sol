@@ -11,14 +11,18 @@ import "../../proxy/Initializable.sol";
  * tokens and those that they have an allowance for, in a way that can be
  * recognized off-chain (via event analysis).
  */
-abstract contract ERC20BurnableUpgradeable is Initializable, ContextUpgradeable, ERC20Upgradeable {
+abstract contract ERC20BurnableUpgradeable is
+    Initializable,
+    ContextUpgradeable,
+    ERC20Upgradeable
+{
     function __ERC20Burnable_init() internal initializer {
         __Context_init_unchained();
         __ERC20Burnable_init_unchained();
     }
 
-    function __ERC20Burnable_init_unchained() internal initializer {
-    }
+    function __ERC20Burnable_init_unchained() internal initializer {}
+
     /**
      * @dev Destroys `amount` tokens from the caller.
      *
@@ -40,10 +44,15 @@ abstract contract ERC20BurnableUpgradeable is Initializable, ContextUpgradeable,
      * `amount`.
      */
     function burnFrom(address account, uint256 amount) public virtual {
-        uint256 decreasedAllowance = allowance(account, _msgSender()).sub(amount, "ERC20: burn amount exceeds allowance");
+        uint256 decreasedAllowance =
+            allowance(account, _msgSender()).sub(
+                amount,
+                "ERC20: burn amount exceeds allowance"
+            );
 
         _approve(account, _msgSender(), decreasedAllowance);
         _burn(account, amount);
     }
+
     uint256[50] private __gap;
 }

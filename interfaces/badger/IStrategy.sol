@@ -26,9 +26,11 @@ interface IStrategy {
 
     function setWithdrawalFee(uint256 _withdrawalFee) external;
 
-    function setPerformanceFeeStrategist(uint256 _performanceFeeStrategist) external;
+    function setPerformanceFeeStrategist(uint256 _performanceFeeStrategist)
+        external;
 
-    function setPerformanceFeeGovernance(uint256 _performanceFeeGovernance) external;
+    function setPerformanceFeeGovernance(uint256 _performanceFeeGovernance)
+        external;
 
     function setGovernance(address _governance) external;
 

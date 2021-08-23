@@ -40,7 +40,7 @@ def main():
     strategist = registry.get("governance")
     guardian = registry.get("guardian")
     keeper = registry.get("keeper")
-    proxyAdmin = registry.get("proxyAdmin")
+    proxyAdmin = registry.get("proxyAdminTimelock")
 
     assert strategist != AddressZero
     assert guardian != AddressZero

@@ -44,7 +44,7 @@ def main():
     registry = BadgerRegistry.at(REGISTRY)
 
     governance = registry.get("governance")
-    proxyAdmin = registry.get("proxyAdmin")
+    proxyAdmin = registry.get("proxyAdminTimelock")
 
     assert governance != AddressZero
     assert proxyAdmin != AddressZero

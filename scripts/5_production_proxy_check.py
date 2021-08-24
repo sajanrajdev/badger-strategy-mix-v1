@@ -50,7 +50,7 @@ def main():
 
     # NOTE: Add all authors from your network registry. For example:
     authors = [
-        "0xeE8b29AA52dD5fF2559da2C50b1887ADee257556"
+        "0x1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a"
     ]
 
     check_by_keys(registry, proxyAdmin, keys)

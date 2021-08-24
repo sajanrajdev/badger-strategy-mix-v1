@@ -11,14 +11,16 @@ ADMIN_SLOT = int(
 
 def main():
     """
-    Checks that the proxyAdmin of all contracts added to the BadgerRegistry match
-    the proxyAdminTimelock address from the same registry. How to run:
+    Checks that the proxyAdmin of all conracts added to the BadgerRegistry match
+    the proxyAdminTimelock address on the same registry. How to run:
 
     1. Add all keys for the network's registry to the 'keys' array below.
     
     2. Add all authors' addresses with vaults added to the registry into the 'authors' array below. 
 
-    3. Run the script and review the console output.
+    3. Add all all keys for the proxyAdmins for the network's registry paired to their owners' keys.
+
+    4. Run the script and review the console output.
     """
 
     console.print("You are using the", network.show_active(), "network")
@@ -26,7 +28,7 @@ def main():
     # Get production registry
     registry = BadgerRegistry.at(REGISTRY)
 
-    # Get proxyAdminTimelock address to compare to
+    # Get proxyAdminTimelock
     proxyAdmin = registry.get("proxyAdminTimelock")
     assert proxyAdmin != AddressZero
     console.print("[cyan]proxyAdminTimelock:[/cyan]", proxyAdmin)
@@ -38,7 +40,7 @@ def main():
         "keeper",
         "controller",
         "badgerTree",
-        "devGovernancce",
+        "devGovernance",
         "paymentsGovernance",
         "governanceTimelock",
         "proxyAdminDev",
@@ -48,13 +50,21 @@ def main():
         "dfdBadgerSharedGovernance"
     ]
 
-    # NOTE: Add all authors from your network registry. For example:
+    # NOTE: Add all authors from your network's registry. For example:
     authors = [
         "0x1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a"
     ]
 
+    # NOTE: Add the keys to all proxyAdmins from your network's registry paired to their owner
+    proxyAdminOwners = [
+        ["proxyAdminTimelock", "governanceTimelock"],
+        ["proxyAdminDev", "devGovernance"],
+        ["proxyAdminDfdBadger", "dfdBadgerSharedGovernance"],
+    ]
+
     check_by_keys(registry, proxyAdmin, keys)
     check_vaults_and_strategies(registry, proxyAdmin, authors)
+    check_proxy_admin_owners(proxyAdminOwners, registry)
 
 
 def check_by_keys(registry, proxyAdmin, keys):
@@ -124,4 +134,30 @@ def check_proxy_admin(proxy, proxyAdmin, key):
         assert address == proxyAdmin
         console.print(
             key, ":[green] admin matches proxyAdminTimelock![/green]"
+        )
+
+def check_proxy_admin_owners(proxyAdminOwners, registry):
+    console.print("[blue]Checking proxyAdmins' owners...[/blue]")
+
+    for adminOwnerPair in proxyAdminOwners:
+        proxyAdmin = registry.get(adminOwnerPair[0])
+        owner = registry.get(adminOwnerPair[1])
+        # Get proxyAdmin's owner address from slot 0
+        val = web3.eth.getStorageAt(proxyAdmin, 0).hex()
+        address = "0x" + val[26:66]
+
+        # Check differnt possible scenarios
+        if address == AddressZero:
+            console.print(
+                adminOwnerPair[0], ":[red] no address found at slot 0![/red]"
+            )
+        elif address != owner:
+            console.print(
+                adminOwnerPair[0], ":[red] owner is different to[/red]", adminOwnerPair[1], "-",
+                address
+            )
+        else:
+            assert address == owner
+            console.print(
+                adminOwnerPair[0], ":[green] owner matches[/green]", adminOwnerPair[1],
         )

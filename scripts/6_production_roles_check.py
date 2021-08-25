@@ -98,7 +98,7 @@ def check_controller_roles(registry):
 
     controllerAddress = registry.get("controller")
     governance = registry.get("governance")
-    governanceTimelock = #registry.get("governanceTimelock")
+    governanceTimelock = registry.get("governanceTimelock")
 
     assert controllerAddress != AddressZero
     assert governance != AddressZero
